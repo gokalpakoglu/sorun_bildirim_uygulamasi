@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "162898325465",
+    "project_id": "sorun-bildirme-uygulamasi",
+    "storage_bucket": "sorun-bildirme-uygulamasi.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:162898325465:android:a2160e22ab992dcb3ff3c8",
+        "android_client_info": {
+          "package_name": "com.example.sorun_bildirim_uygulamasi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBWdQ-fYTqv9QODuIZaFFACmeUVpU6gKfs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
