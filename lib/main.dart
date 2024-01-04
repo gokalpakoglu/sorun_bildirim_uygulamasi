@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_config/flutter_config.dart';
 import 'package:sorun_bildirim_uygulamasi/app/app.dart';
+import 'package:sorun_bildirim_uygulamasi/app/views/login/bloc/login_bloc.dart';
+import 'package:sorun_bildirim_uygulamasi/app/views/profile/bloc/profile_bloc.dart';
 import 'package:sorun_bildirim_uygulamasi/app/views/register/bloc/register_bloc.dart';
 import 'package:sorun_bildirim_uygulamasi/firebase_options.dart';
 
@@ -12,8 +14,16 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await FlutterConfig.loadEnvVariables();
-  runApp(BlocProvider(
-    create: (context) => RegisterBloc(),
+  runApp(MultiBlocProvider(
+    providers: [
+      BlocProvider<RegisterBloc>(create: (context) => RegisterBloc()),
+      BlocProvider<LoginBloc>(
+        create: (context) => LoginBloc(),
+      ),
+      BlocProvider<ProfileBloc>(
+        create: (context) => ProfileBloc(),
+      )
+    ],
     child: MyApp(),
   ));
 }

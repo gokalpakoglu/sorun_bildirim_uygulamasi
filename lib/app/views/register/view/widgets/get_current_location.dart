@@ -1,8 +1,9 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sorun_bildirim_uygulamasi/app/views/register/bloc/register_bloc.dart';
-
+@RoutePage()
 class GetCurrentLocationView extends StatefulWidget {
   const GetCurrentLocationView({super.key});
 

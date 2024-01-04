@@ -8,26 +8,20 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sorun_bildirim_uygulamasi/core/init/models/app_user.dart';
 import 'package:sorun_bildirim_uygulamasi/core/init/service/firebase_service.dart';
 
-part 'register_event.dart';
-part 'register_state.dart';
+part 'profile_event.dart';
+part 'profile_state.dart';
 
-class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
+class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final auth = FirebaseAuthService();
   final Completer<GoogleMapController> mapController = Completer();
-  RegisterBloc() : super(const RegisterState()) {
-    on<RegisterEmailChanged>((event, emit) {
-      emit(state.copyWith(email: event.email));
-    });
-    on<RegisterPasswordChanged>((event, emit) {
-      emit(state.copyWith(password: event.password));
-    });
-    on<RegisterNameChanged>((event, emit) {
+  ProfileBloc() : super(const ProfileState()) {
+    on<ProfileNameChanged>((event, emit) {
       emit(state.copyWith(name: event.name));
     });
-    on<RegisterSurnameChanged>((event, emit) {
+    on<ProfileSurnameChanged>((event, emit) {
       emit(state.copyWith(surname: event.surname));
     });
-    on<RegisterLatLngChanged>((event, emit) async {
+    on<ProfileAnimateCamera>((event, emit) async {
       Position position = await getCurrentLocation();
       var selectedMarker = Marker(
           markerId: const MarkerId("deneme"),
@@ -42,25 +36,20 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
           marker: {selectedMarker}));
       debugPrint(selectedMarker.toString());
     });
-    on<RegisterSubmitted>((event, emit) {
+    on<ProfileSubmitted>((event, emit) {
       AppUser user = AppUser(
-        email: state.email,
-        name: state.name,
-        surname: state.surname,
-        lat: state.lat,
-        lng: state.lng,
-        password: state.password,
-      );
+          name: state.name,
+          surname: state.surname,
+          lat: state.lat,
+          lng: state.lng);
+      auth.updateUser(user);
       debugPrint(user.toString());
-      auth.registerUser(user);
     });
-
-    on<RegisterMapCreated>((event, emit) {
+    on<ProfileMapCreated>((event, emit) {
       if (!mapController.isCompleted) {
         mapController.complete(event.controller);
       }
     });
-    on<RegisterAnimateCamera>((event, emit) async {});
   }
 }
 

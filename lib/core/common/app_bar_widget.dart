@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 
 class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
-  const AppBarWidget({super.key});
+  const AppBarWidget({super.key, required this.title});
+
+  final String title;
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: const Text(
-        'Login to Your Account',
-        style: TextStyle(
+      title: Text(
+        title,
+        style: const TextStyle(
           color: Colors.deepPurple,
         ),
       ),

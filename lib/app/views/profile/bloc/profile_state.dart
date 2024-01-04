@@ -1,9 +1,7 @@
-part of 'register_bloc.dart';
+part of 'profile_bloc.dart';
 
-class RegisterState extends Equatable {
-  const RegisterState({
-    this.email = '',
-    this.password = '',
+class ProfileState extends Equatable {
+  const ProfileState({
     this.name = '',
     this.surname = '',
     this.lat = 0.0,
@@ -12,16 +10,10 @@ class RegisterState extends Equatable {
     this.marker = const {},
   });
 
-  final String email;
-  bool get isValidEmail => email.length > 3 && email.contains("@");
-
-  final String password;
-  bool get isValidPassword => password.length > 6;
-
   final String name;
-  bool get isValidName => name.length > 0;
+  bool get isValidName => name.isNotEmpty;
   final String surname;
-  bool get isValidSurname => surname.length > 0;
+  bool get isValidSurname => surname.isNotEmpty;
 
   final double lat;
   final double lng;
@@ -30,18 +22,14 @@ class RegisterState extends Equatable {
 
   final Set<Marker> marker;
 
-  RegisterState copyWith(
-      {String? email,
-      String? password,
-      AppStatus? appStatus,
+  ProfileState copyWith(
+      {AppStatus? appStatus,
       String? name,
       String? surname,
       double? lat,
       double? lng,
       Set<Marker>? marker}) {
-    return RegisterState(
-      email: email ?? this.email,
-      password: password ?? this.password,
+    return ProfileState(
       appStatus: appStatus ?? this.appStatus,
       name: name ?? this.name,
       surname: surname ?? this.surname,
@@ -52,8 +40,7 @@ class RegisterState extends Equatable {
   }
 
   @override
-  List<Object?> get props =>
-      [email, password, appStatus, name, surname, lat, lng, marker];
+  List<Object?> get props => [appStatus, name, surname, lat, lng, marker];
 }
 
 enum AppStatus {
