@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sorun_bildirim_uygulamasi/core/init/service/firebase_service.dart';
 
@@ -23,15 +24,23 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     on<LoginSubmitted>((event, emit) async {
       try {
         await auth.loginUser(state.email, state.password);
-        emit(state.copyWith(appStatus: AppStatus.loaded));
-      } catch (e) {
-        emit(state.copyWith(appStatus: AppStatus.error));
+      } on FirebaseAuthException catch (e) {
+        // FirebaseAuthException durumunda hata yakalanabilir
+        if (e.code == 'user-not-found') {
+          // Kullanıcı bulunamadı hatası
+          print('No user found for that email.');
+        } else if (e.code == 'wrong-password') {
+          // Yanlış şifre hatası
+          print('Wrong password provided for that user.');
+        }
+        // Firebase tarafından gelen diğer hataların kontrolü burada yapılabilir
+        print(e.toString());
+        return;
       }
     });
   }
 }
 
-/// The validateEmail method checks the email field.
 String? validateEmail({String? email}) {
   if (email?.isEmpty ?? false) {
     return 'Email cannot be empty';
@@ -42,7 +51,6 @@ String? validateEmail({String? email}) {
   }
 }
 
-/// The validatePassword method checks the password field.
 String? validatePassword({String? password}) {
   if (password?.isEmpty ?? false) {
     return 'Password cannot be empty';

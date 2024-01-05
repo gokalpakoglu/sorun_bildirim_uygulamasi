@@ -1,0 +1,36 @@
+{
+    "appTitle": "Sorun Bildirim Uygulaması",
+    "@appTitle": {
+      "description": "Uygulamanın başlığı"
+    },
+    
+    "home": "Anasayfa",
+    "settings": "Ayarlar",
+    "profile": "Profil",
+    "settingsPage": "Ayarlar Sayfası",
+    "selectTheme": "Tema Seç",
+    "selectLanguage": "Dil Seç",
+    "english": "İngilizce",
+    "turkish": "Türkçe",
+    "loginPage": "Giriş Sayfası",
+    "emailAddress": "E-posta Adresi",
+    "enterYourEmail": "E-posta adresinizi girin",
+    "password": "Şifre",
+    "enterYourPassword": "Şifrenizi girin",
+    "forgotPassword": "Şifrenizi mi unuttunuz?",
+    "login": "Giriş Yap",
+    "haveAccounts": "Hesabınız yok mu?",
+    "register": "Kayıt Ol",
+    "registerPage": "Kayıt Sayfası",
+    "name": "İsim",
+    "enterYourName": "İsminizi girin",
+    "surname": "Soyisim",
+    "enterYourSurname": "Soyisminizi girin",
+    "location": "Konum",
+    "getCurrentLocation": "Mevcut Konumu Al",
+    "signup": "Kaydol",
+    "currentLocation": "Mevcut Konum",
+    "logOut": "Çıkış Yap",
+    "helloUser":"Hoşgeldiniz",
+    "update":"Güncelle"
+  }

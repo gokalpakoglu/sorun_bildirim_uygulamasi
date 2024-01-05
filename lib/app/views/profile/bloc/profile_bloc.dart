@@ -16,10 +16,13 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final Completer<GoogleMapController> mapController = Completer();
   ProfileBloc() : super(const ProfileState()) {
     on<ProfileNameChanged>((event, emit) {
-      emit(state.copyWith(name: event.name));
+      emit(state.copyWith(
+          name: event.name, nameErrorMsg: validateName(name: event.name)));
     });
     on<ProfileSurnameChanged>((event, emit) {
-      emit(state.copyWith(surname: event.surname));
+      emit(state.copyWith(
+          surname: event.surname,
+          surnameErrorMsg: validateSurname(surname: event.surname)));
     });
     on<ProfileAnimateCamera>((event, emit) async {
       Position position = await getCurrentLocation();
@@ -36,18 +39,25 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           marker: {selectedMarker}));
       debugPrint(selectedMarker.toString());
     });
-    on<ProfileSubmitted>((event, emit) {
-      AppUser user = AppUser(
+    on<ProfileSubmitted>((event, emit) async {
+      try {
+        // Güncellenecek verileri içeren AppUser nesnesi oluştur
+        AppUser user = AppUser(
           name: state.name,
           surname: state.surname,
           lat: state.lat,
-          lng: state.lng);
-      auth.updateUser(user);
-      debugPrint(user.toString());
-    });
-    on<ProfileMapCreated>((event, emit) {
-      if (!mapController.isCompleted) {
-        mapController.complete(event.controller);
+          lng: state.lng,
+        );
+
+        // Firestore üzerindeki kullanıcı bilgilerini güncelle
+        auth.updateUser(user);
+        debugPrint(user.toString());
+
+        // State'i güncelle, sadece name ve surname alanları
+      } catch (e) {
+        // Hata durumunda yapılacak işlemler
+        debugPrint('Hata: $e');
+        // Hata durumunu state'e yansıtabilir ya da farklı bir şekilde kullanıcıya bildirebilirsiniz
       }
     });
   }
@@ -73,4 +83,20 @@ Future<Position> getCurrentLocation() async {
   }
   Position position = await Geolocator.getCurrentPosition();
   return position;
+}
+
+String? validateName({String? name}) {
+  if (name?.isEmpty ?? false) {
+    return 'Name cannot be empty';
+  } else {
+    return null;
+  }
+}
+
+String? validateSurname({String? surname}) {
+  if (surname?.isEmpty ?? false) {
+    return 'Surname cannot be empty';
+  } else {
+    return null;
+  }
 }

@@ -10,7 +10,7 @@ class LoginState extends Equatable {
   });
 
   final String email;
-  bool get isValidEmail => email.length > 3 && email.contains('@');
+  bool get isValidEmail => email.isNotEmpty && email.contains('@');
   final String password;
   bool get isValidPassword => password.length > 5;
   final AppStatus appStatus;

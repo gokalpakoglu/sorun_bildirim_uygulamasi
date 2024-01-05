@@ -15,6 +15,7 @@ class ProfileSurnameChanged extends ProfileEvent {
   @override
   List<Object?> get props => [surname];
 }
+
 class ProfileLatLngChanged extends ProfileEvent {
   ProfileLatLngChanged();
 
@@ -36,8 +37,9 @@ class ProfileAnimateCamera extends ProfileEvent {
   List<Object?> get props => [cameraPosition];
 }
 
-
 class ProfileSubmitted extends ProfileEvent {
+  ProfileSubmitted();
+
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_config/flutter_config.dart';
 import 'package:sorun_bildirim_uygulamasi/app/app.dart';
+import 'package:sorun_bildirim_uygulamasi/app/views/app_settings/bloc/app_settings_bloc.dart';
+import 'package:sorun_bildirim_uygulamasi/app/views/home/bloc/home_bloc.dart';
 import 'package:sorun_bildirim_uygulamasi/app/views/login/bloc/login_bloc.dart';
 import 'package:sorun_bildirim_uygulamasi/app/views/profile/bloc/profile_bloc.dart';
 import 'package:sorun_bildirim_uygulamasi/app/views/register/bloc/register_bloc.dart';
@@ -22,6 +24,12 @@ void main() async {
       ),
       BlocProvider<ProfileBloc>(
         create: (context) => ProfileBloc(),
+      ),
+      BlocProvider<AppSettingsBloc>(
+        create: (context) => AppSettingsBloc(),
+      ),
+      BlocProvider<HomeBloc>(
+        create: (context) => HomeBloc(),
       )
     ],
     child: MyApp(),

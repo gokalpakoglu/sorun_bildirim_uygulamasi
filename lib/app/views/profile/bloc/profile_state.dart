@@ -2,6 +2,8 @@ part of 'profile_bloc.dart';
 
 class ProfileState extends Equatable {
   const ProfileState({
+    this.nameErrorMsg,
+    this.surnameErrorMsg,
     this.name = '',
     this.surname = '',
     this.lat = 0.0,
@@ -18,6 +20,9 @@ class ProfileState extends Equatable {
   final double lat;
   final double lng;
 
+  final String? nameErrorMsg;
+  final String? surnameErrorMsg;
+
   final AppStatus appStatus;
 
   final Set<Marker> marker;
@@ -26,6 +31,8 @@ class ProfileState extends Equatable {
       {AppStatus? appStatus,
       String? name,
       String? surname,
+      String? nameErrorMsg,
+      String? surnameErrorMsg,
       double? lat,
       double? lng,
       Set<Marker>? marker}) {
@@ -33,6 +40,8 @@ class ProfileState extends Equatable {
       appStatus: appStatus ?? this.appStatus,
       name: name ?? this.name,
       surname: surname ?? this.surname,
+      nameErrorMsg: name != null ? '' : nameErrorMsg,
+      surnameErrorMsg: surname != null ? '' : surnameErrorMsg,
       lat: lat ?? this.lat,
       lng: lng ?? this.lng,
       marker: marker ?? this.marker,
@@ -40,7 +49,16 @@ class ProfileState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [appStatus, name, surname, lat, lng, marker];
+  List<Object?> get props => [
+        appStatus,
+        name,
+        surname,
+        lat,
+        lng,
+        marker,
+        nameErrorMsg,
+        surnameErrorMsg
+      ];
 }
 
 enum AppStatus {

@@ -2,6 +2,10 @@ part of 'register_bloc.dart';
 
 class RegisterState extends Equatable {
   const RegisterState({
+    this.emailErrorMsg,
+    this.passwordErrorMsg,
+    this.nameErrorMsg,
+    this.surnameErrorMsg,
     this.email = '',
     this.password = '',
     this.name = '',
@@ -13,15 +17,20 @@ class RegisterState extends Equatable {
   });
 
   final String email;
-  bool get isValidEmail => email.length > 3 && email.contains("@");
+  bool get isValidEmail => email.isNotEmpty && email.contains("@");
 
   final String password;
-  bool get isValidPassword => password.length > 6;
+  bool get isValidPassword => password.length > 5;
 
   final String name;
-  bool get isValidName => name.length > 0;
+  bool get isValidName => name.isNotEmpty;
   final String surname;
-  bool get isValidSurname => surname.length > 0;
+  bool get isValidSurname => surname.isNotEmpty;
+
+  final String? emailErrorMsg;
+  final String? passwordErrorMsg;
+  final String? nameErrorMsg;
+  final String? surnameErrorMsg;
 
   final double lat;
   final double lng;
@@ -36,6 +45,10 @@ class RegisterState extends Equatable {
       AppStatus? appStatus,
       String? name,
       String? surname,
+      String? emailErrorMsg,
+      String? passwordErrorMsg,
+      String? nameErrorMsg,
+      String? surnameErrorMsg,
       double? lat,
       double? lng,
       Set<Marker>? marker}) {
@@ -45,6 +58,10 @@ class RegisterState extends Equatable {
       appStatus: appStatus ?? this.appStatus,
       name: name ?? this.name,
       surname: surname ?? this.surname,
+      emailErrorMsg: email != null ? '' : emailErrorMsg,
+      passwordErrorMsg: password != null ? '' : passwordErrorMsg,
+      nameErrorMsg: name != null ? '' : nameErrorMsg,
+      surnameErrorMsg: surname != null ? '' : surnameErrorMsg,
       lat: lat ?? this.lat,
       lng: lng ?? this.lng,
       marker: marker ?? this.marker,
@@ -52,8 +69,20 @@ class RegisterState extends Equatable {
   }
 
   @override
-  List<Object?> get props =>
-      [email, password, appStatus, name, surname, lat, lng, marker];
+  List<Object?> get props => [
+        email,
+        password,
+        appStatus,
+        name,
+        surname,
+        lat,
+        lng,
+        marker,
+        emailErrorMsg,
+        passwordErrorMsg,
+        nameErrorMsg,
+        surnameErrorMsg
+      ];
 }
 
 enum AppStatus {

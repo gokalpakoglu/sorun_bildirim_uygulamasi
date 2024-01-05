@@ -16,16 +16,23 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   final Completer<GoogleMapController> mapController = Completer();
   RegisterBloc() : super(const RegisterState()) {
     on<RegisterEmailChanged>((event, emit) {
-      emit(state.copyWith(email: event.email));
+      emit(state.copyWith(
+          email: event.email,
+          emailErrorMsg: validateEmail(email: event.email)));
     });
     on<RegisterPasswordChanged>((event, emit) {
-      emit(state.copyWith(password: event.password));
+      emit(state.copyWith(
+          password: event.password,
+          passwordErrorMsg: validatePassword(password: event.password)));
     });
     on<RegisterNameChanged>((event, emit) {
-      emit(state.copyWith(name: event.name));
+      emit(state.copyWith(
+          name: event.name, nameErrorMsg: validateName(name: event.name)));
     });
     on<RegisterSurnameChanged>((event, emit) {
-      emit(state.copyWith(surname: event.surname));
+      emit(state.copyWith(
+          surname: event.surname,
+          surnameErrorMsg: validateSurname(surname: event.surname)));
     });
     on<RegisterLatLngChanged>((event, emit) async {
       Position position = await getCurrentLocation();
@@ -84,4 +91,41 @@ Future<Position> getCurrentLocation() async {
   }
   Position position = await Geolocator.getCurrentPosition();
   return position;
+}
+
+String? validateEmail({String? email}) {
+  if (email?.isEmpty ?? false) {
+    return 'Email cannot be empty';
+  } else if (!(email?.contains('@') ?? false)) {
+    return 'Email is not valid';
+  } else {
+    return null;
+  }
+}
+
+String? validatePassword({String? password}) {
+  if (password?.isEmpty ?? false) {
+    return 'Password cannot be empty';
+  } else if ((password?.length ?? 0) < 6) {
+    debugPrint(password?.length.toString());
+    return 'Password must be at least 6 characters';
+  } else {
+    return null;
+  }
+}
+
+String? validateName({String? name}) {
+  if (name?.isEmpty ?? false) {
+    return 'Name cannot be empty';
+  } else {
+    return null;
+  }
+}
+
+String? validateSurname({String? surname}) {
+  if (surname?.isEmpty ?? false) {
+    return 'Surname cannot be empty';
+  } else {
+    return null;
+  }
 }
