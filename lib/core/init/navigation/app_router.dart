@@ -14,6 +14,7 @@ class AppRouter extends $AppRouter {
           page: LoginRoute.page,
         ),
         AutoRoute(page: GetCurrentLocationRoute.page),
+        AutoRoute(page: AddProblemRoute.page),
         AutoRoute(page: MainRoute.page, initial: true, children: [
           AutoRoute(
             page: HomeRoute.page,

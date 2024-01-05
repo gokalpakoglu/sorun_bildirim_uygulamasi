@@ -6,27 +6,23 @@ part 'app_settings_event.dart';
 part 'app_settings_state.dart';
 
 class AppSettingsBloc extends Bloc<AppSettingsEvent, AppSettingsState> {
-  final ThemeData themeData;
-  final AppTheme selectedThemeButton;
-  final Locale locale;
-  final Languages selectedLanguageButton;
-  AppSettingsBloc({
-    required this.themeData,
-    required this.selectedThemeButton,
-    required this.locale,
-    required this.selectedLanguageButton,
-  }) : super(
+  final ThemeData? themeData;
+  final AppTheme? selectedTheme;
+  final Locale? locale;
+  final Languages? selectedLanguage;
+  AppSettingsBloc(
+      {this.selectedLanguage, this.themeData, this.selectedTheme, this.locale})
+      : super(
           AppSettingsState(
-            language: selectedLanguageButton,
+            languages: selectedLanguage,
             locale: locale,
-            theme: selectedThemeButton,
+            theme: selectedTheme,
             themeData: themeData,
           ),
         ) {
     on<SelectLanguage>(
       (event, emit) async {
         emit(state.copyWith(locale: event.locale));
-        emit(state.copyWith(language: event.language));
       },
     );
     on<SelectTheme>(

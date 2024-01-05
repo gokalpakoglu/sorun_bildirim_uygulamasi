@@ -9,8 +9,8 @@ class AppThemes {
         bodyLarge: TextStyle(color: Colors.black),
       ),
       brightness: Brightness.light,
-      colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue)
-          .copyWith(background: Colors.white),
+      colorScheme: const ColorScheme.light(
+          primary: Colors.blue, background: Colors.white),
     ),
     AppTheme.darkTheme: ThemeData(
       primaryColor: Colors.black,
@@ -19,9 +19,9 @@ class AppThemes {
         bodyLarge: TextStyle(color: Colors.white),
       ),
       brightness: Brightness.dark,
-      colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.teal)
-          .copyWith(background: Colors.black),
-    ),
+      colorScheme: const ColorScheme.dark(
+          primary: Colors.teal, background: Colors.black),
+    )
   };
 }
 
