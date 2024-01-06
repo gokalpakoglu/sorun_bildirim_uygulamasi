@@ -2,6 +2,7 @@ part of 'register_bloc.dart';
 
 class RegisterState extends Equatable {
   const RegisterState({
+    this.errorMsg,
     this.emailErrorMsg,
     this.passwordErrorMsg,
     this.nameErrorMsg,
@@ -31,6 +32,7 @@ class RegisterState extends Equatable {
   final String? passwordErrorMsg;
   final String? nameErrorMsg;
   final String? surnameErrorMsg;
+  final String? errorMsg;
 
   final double lat;
   final double lng;
@@ -38,6 +40,13 @@ class RegisterState extends Equatable {
   final AppStatus appStatus;
 
   final Set<Marker> marker;
+
+  factory RegisterState.initial() {
+    return const RegisterState(errorMsg: null);
+  }
+  factory RegisterState.error(String message) {
+    return RegisterState(errorMsg: message, appStatus: AppStatus.error);
+  }
 
   RegisterState copyWith(
       {String? email,
@@ -49,6 +58,7 @@ class RegisterState extends Equatable {
       String? passwordErrorMsg,
       String? nameErrorMsg,
       String? surnameErrorMsg,
+      String? errorMsg,
       double? lat,
       double? lng,
       Set<Marker>? marker}) {
@@ -62,6 +72,7 @@ class RegisterState extends Equatable {
       passwordErrorMsg: password != null ? '' : passwordErrorMsg,
       nameErrorMsg: name != null ? '' : nameErrorMsg,
       surnameErrorMsg: surname != null ? '' : surnameErrorMsg,
+      errorMsg: errorMsg,
       lat: lat ?? this.lat,
       lng: lng ?? this.lng,
       marker: marker ?? this.marker,

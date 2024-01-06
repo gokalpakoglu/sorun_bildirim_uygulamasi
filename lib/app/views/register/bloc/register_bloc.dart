@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -12,9 +13,10 @@ part 'register_event.dart';
 part 'register_state.dart';
 
 class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
-  final auth = FirebaseAuthService();
+  final authSerivce = FirebaseAuthService();
+
   final Completer<GoogleMapController> mapController = Completer();
-  RegisterBloc() : super(const RegisterState()) {
+  RegisterBloc() : super(RegisterState.initial()) {
     on<RegisterEmailChanged>((event, emit) {
       emit(state.copyWith(
           email: event.email,
@@ -49,17 +51,34 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
           marker: {selectedMarker}));
       debugPrint(selectedMarker.toString());
     });
-    on<RegisterSubmitted>((event, emit) {
-      AppUser user = AppUser(
-        email: state.email,
-        name: state.name,
-        surname: state.surname,
-        lat: state.lat,
-        lng: state.lng,
-        password: state.password,
-      );
-      debugPrint(user.toString());
-      auth.registerUser(user);
+    on<RegisterSubmitted>((event, emit) async {
+      var existingUser = await authSerivce.checkExistingUser(state.email);
+      try {
+        if (existingUser == true) {
+          emit(state.copyWith(
+            errorMsg: 'Bu e-posta adresi zaten kullanılıyor.',
+            appStatus: AppStatus.error,
+          ));
+          throw "Bu e-posta adresi ile kayıtlı bir hesap bulunmaktadır.";
+        } else {
+          AppUser user = AppUser(
+            email: state.email,
+            name: state.name,
+            surname: state.surname,
+            lat: state.lat,
+            lng: state.lng,
+            password: state.password,
+          );
+          debugPrint(user.toString());
+
+          await authSerivce.registerUser(user);
+          emit(state.copyWith(appStatus: AppStatus.loaded));
+        }
+      } on FirebaseAuthException catch (e) {
+        emit(state.copyWith(appStatus: AppStatus.error, errorMsg: e.code));
+      } catch (e) {
+        // Genel hata durumu...
+      }
     });
 
     on<RegisterMapCreated>((event, emit) {

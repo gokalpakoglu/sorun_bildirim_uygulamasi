@@ -84,6 +84,16 @@ class FirebaseAuthService {
     }
   }
 
+  Future<bool> checkExistingUser(String email) async {
+    try {
+      var signInMethods =
+          await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
+      return signInMethods.isNotEmpty;
+    } catch (e) {
+      return false;
+    }
+  }
+
   // Future<void> resetPassword({required String email}) async {
   //   try {
   //     await _auth.sendPasswordResetEmail(email: email);

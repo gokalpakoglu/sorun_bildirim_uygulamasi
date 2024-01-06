@@ -15,8 +15,6 @@ class UpdateCurrentLocationView extends StatefulWidget {
 }
 
 class _UpdateCurrentLocationViewState extends State<UpdateCurrentLocationView> {
-  static const CameraPosition initialCameraPosition =
-      CameraPosition(target: LatLng(37, -122), zoom: 14);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,7 +23,8 @@ class _UpdateCurrentLocationViewState extends State<UpdateCurrentLocationView> {
         builder: (context, state) {
           debugPrint(state.marker.toString());
           return GoogleMap(
-            initialCameraPosition: initialCameraPosition,
+            initialCameraPosition:
+                CameraPosition(target: LatLng(state.lat, state.lng), zoom: 10),
             markers: state.marker,
             zoomControlsEnabled: false,
             mapType: MapType.normal,

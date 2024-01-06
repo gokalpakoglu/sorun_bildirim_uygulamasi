@@ -10,10 +10,9 @@ class RegisterView extends StatelessWidget {
     Key? key,
   }) : super(key: key);
 
-  // Text Controllers
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    return Scaffold(
       appBar: AppBarWidget(title: context.loc.registerPage),
       body: const BodyWidget(),
     );

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sorun_bildirim_uygulamasi/app/views/home/bloc/home_bloc.dart';
+import 'package:sorun_bildirim_uygulamasi/core/init/navigation/app_router.gr.dart';
 
 @RoutePage()
 class AddProblemView extends StatefulWidget {
@@ -86,19 +87,7 @@ class _AddProblemViewState extends State<AddProblemView> {
                     const SizedBox(height: 16.0),
                     ElevatedButton(
                       onPressed: () {
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //     builder: (context) => MapSelectionPage(
-                        //       onLocationSelected: (location) {
-                        //         setState(() {
-                        //           selectedLocation = location;
-                        //         });
-                        //         Navigator.pop(context);
-                        //       },
-                        //     ),
-                        //   ),
-                        // );
+                        context.router.push(const AddProblemLocationRoute());
                       },
                       child: const Text('Select Location on Map'),
                     ),
@@ -107,6 +96,7 @@ class _AddProblemViewState extends State<AddProblemView> {
                       onPressed: () {
                         BlocProvider.of<HomeBloc>(context)
                             .add(AddReportSubmitted());
+                        context.router.push(const MainRoute());
                       },
                       child: const Text('Submit'),
                     )

@@ -24,7 +24,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           surname: event.surname,
           surnameErrorMsg: validateSurname(surname: event.surname)));
     });
-    on<ProfileAnimateCamera>((event, emit) async {
+    on<ProfileLatLngChanged>((event, emit) async {
       Position position = await getCurrentLocation();
       var selectedMarker = Marker(
           markerId: const MarkerId("deneme"),
@@ -39,6 +39,13 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           marker: {selectedMarker}));
       debugPrint(selectedMarker.toString());
     });
+    on<ProfileMapCreated>((event, emit) {
+      if (!mapController.isCompleted) {
+        mapController.complete(event.controller);
+      }
+    });
+    on<ProfileAnimateCamera>((event, emit) async {});
+
     on<ProfileSubmitted>((event, emit) async {
       try {
         // Güncellenecek verileri içeren AppUser nesnesi oluştur

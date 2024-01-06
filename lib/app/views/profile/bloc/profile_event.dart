@@ -24,8 +24,8 @@ class ProfileLatLngChanged extends ProfileEvent {
 }
 
 class ProfileMapCreated extends ProfileEvent {
-  ProfileMapCreated({required this.controller});
-  final GoogleMapController controller;
+  ProfileMapCreated({this.controller});
+  final GoogleMapController? controller;
   @override
   List<Object?> get props => [controller];
 }

@@ -17,7 +17,7 @@ class ProfileView extends StatelessWidget {
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return  Scaffold(
+          return Scaffold(
             appBar: AppBarWidget(title: context.loc.profile),
             body: const BodyWidget(),
           );
