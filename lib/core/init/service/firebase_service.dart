@@ -3,15 +3,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sorun_bildirim_uygulamasi/core/init/models/app_user.dart';
 
 class FirebaseAuthService {
-  final _auth = FirebaseAuth.instance;
-  final _store = FirebaseFirestore.instance;
+  final _firebaseAuth = FirebaseAuth.instance;
+  final _firebaseStore = FirebaseFirestore.instance;
 
   Future<AppUser?> registerUser(AppUser user) async {
     try {
       final UserCredential userCredential =
-          await _auth.createUserWithEmailAndPassword(
+          await _firebaseAuth.createUserWithEmailAndPassword(
               email: user.email!, password: user.password!);
-      await _store.collection("users").doc(_auth.currentUser!.uid).set({
+      await _firebaseStore
+          .collection("users")
+          .doc(_firebaseAuth.currentUser!.uid)
+          .set({
         "name": user.name,
         "surname": user.surname,
         "email": user.email,
@@ -37,7 +40,7 @@ class FirebaseAuthService {
 
   Future<AppUser?> loginUser(String email, String password) async {
     try {
-      final UserCredential userCredential = await _auth
+      final UserCredential userCredential = await _firebaseAuth
           .signInWithEmailAndPassword(email: email, password: password);
       final User? firebaseUser = userCredential.user;
       if (firebaseUser == null) {
@@ -65,7 +68,10 @@ class FirebaseAuthService {
 
   Future<AppUser?> updateUser(AppUser user) async {
     try {
-      await _store.collection("users").doc(_auth.currentUser!.uid).update({
+      await _firebaseStore
+          .collection("users")
+          .doc(_firebaseAuth.currentUser!.uid)
+          .update({
         "name": user.name,
         "surname": user.surname,
         "lat": user.lat,
@@ -78,45 +84,32 @@ class FirebaseAuthService {
   }
 
   Future<void> signOut() async {
-    final User? firebaseUser = _auth.currentUser;
+    final User? firebaseUser = _firebaseAuth.currentUser;
     if (firebaseUser != null) {
-      await _auth.signOut();
+      await _firebaseAuth.signOut();
     }
   }
 
-  Future<bool> checkExistingUser(String email) async {
+// Returns true if email address is in use.
+  Future<bool> checkIfEmailInUse(String email) async {
     try {
-      var signInMethods =
+      // Fetch sign-in methods for the email address
+      final list =
           await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
-      return signInMethods.isNotEmpty;
-    } catch (e) {
-      return false;
+
+      // In case list is not empty
+      if (list.isNotEmpty) {
+        // Return true because there is an existing
+        // user using the email address
+        return true;
+      } else {
+        // Return false because email adress is not in use
+        return false;
+      }
+    } catch (error) {
+      // Handle error
+      // ...
+      return true;
     }
   }
-
-  // Future<void> resetPassword({required String email}) async {
-  //   try {
-  //     await _auth.sendPasswordResetEmail(email: email);
-  //   } on FirebaseAuthException catch (e) {
-  //     print(e.message);
-  //   }
-  // }
-
-  // User? getCurrentUser() {
-  //   return _auth.currentUser;
-  // }
-
-  // Future<String?> getIdToken() async {
-  //   try {
-  //     User? user = _auth.currentUser;
-  //     if (user != null) {
-  //       return await user.getIdToken();
-  //     } else {
-  //       return null;
-  //     }
-  //   } on FirebaseAuthException catch (e) {
-  //     print(e.message);
-  //     return null;
-  //   }
-  // }
 }

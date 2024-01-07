@@ -20,5 +20,5 @@ class LoginSubmitted extends LoginEvent {
   LoginSubmitted();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }

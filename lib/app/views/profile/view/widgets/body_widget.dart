@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sorun_bildirim_uygulamasi/app/views/profile/bloc/profile_bloc.dart';
+import 'package:sorun_bildirim_uygulamasi/core/blocs/bloc_status.dart';
 import 'package:sorun_bildirim_uygulamasi/core/extension/context_extension.dart';
 import 'package:sorun_bildirim_uygulamasi/core/init/navigation/app_router.gr.dart';
 
@@ -104,7 +105,7 @@ class _BodyWidgetState extends State<BodyWidget> {
                                   .add(ProfileSubmitted());
                             },
                             child: Text(
-                              state.appStatus.isLoading
+                              state.appStatus is SubmissionLoading
                                   ? '.......'
                                   : context.loc.update,
                               style: const TextStyle(

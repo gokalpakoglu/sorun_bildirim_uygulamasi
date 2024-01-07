@@ -8,7 +8,7 @@ class ProfileState extends Equatable {
     this.surname = '',
     this.lat = 0.0,
     this.lng = 0.0,
-    this.appStatus = AppStatus.initial,
+    this.appStatus = const InitialStatus(),
     this.marker = const {},
   });
 
@@ -23,12 +23,12 @@ class ProfileState extends Equatable {
   final String? nameErrorMsg;
   final String? surnameErrorMsg;
 
-  final AppStatus appStatus;
+  final AppSubmissionStatus appStatus;
 
   final Set<Marker> marker;
 
   ProfileState copyWith(
-      {AppStatus? appStatus,
+      {AppSubmissionStatus? status,
       String? name,
       String? surname,
       String? nameErrorMsg,
@@ -37,7 +37,7 @@ class ProfileState extends Equatable {
       double? lng,
       Set<Marker>? marker}) {
     return ProfileState(
-      appStatus: appStatus ?? this.appStatus,
+      appStatus: appStatus,
       name: name ?? this.name,
       surname: surname ?? this.surname,
       nameErrorMsg: name != null ? '' : nameErrorMsg,
@@ -59,16 +59,4 @@ class ProfileState extends Equatable {
         nameErrorMsg,
         surnameErrorMsg
       ];
-}
-
-enum AppStatus {
-  initial,
-  loading,
-  loaded,
-  error;
-
-  bool get isInitial => this == AppStatus.initial;
-  bool get isLoading => this == AppStatus.loading;
-  bool get isLoaded => this == AppStatus.loaded;
-  bool get isError => this == AppStatus.error;
 }

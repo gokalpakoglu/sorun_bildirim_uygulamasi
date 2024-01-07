@@ -96,7 +96,8 @@ class _AddProblemViewState extends State<AddProblemView> {
                       onPressed: () {
                         BlocProvider.of<HomeBloc>(context)
                             .add(AddReportSubmitted());
-                        context.router.push(const MainRoute());
+                        context.router.pushAndPopUntil(const MainRoute(),
+                            predicate: (_) => false);
                       },
                       child: const Text('Submit'),
                     )

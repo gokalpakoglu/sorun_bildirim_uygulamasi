@@ -2,13 +2,14 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:sorun_bildirim_uygulamasi/core/blocs/bloc_status.dart';
 import 'package:sorun_bildirim_uygulamasi/core/init/service/firebase_service.dart';
 
 part 'login_event.dart';
 part 'login_state.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
-  final auth = FirebaseAuthService();
+  final _firebaseAuthService = FirebaseAuthService();
 
   LoginBloc() : super(const LoginState()) {
     on<LoginEmailChanged>((event, emit) {
@@ -22,20 +23,58 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           passwordErrorMsg: validatePassword(password: event.password)));
     });
     on<LoginSubmitted>((event, emit) async {
+      emit(state.copyWith(appStatus: FormSubmitting()));
       try {
-        await auth.loginUser(state.email, state.password);
+        await _firebaseAuthService
+            .loginUser(state.email, state.password)
+            .then((value) {
+          if (value != null) {
+            emit(state.copyWith(appStatus: const SubmissionSuccess()));
+          } 
+          else {
+            emit(state.copyWith(
+                appStatus: SubmissionFailed("Giriş bilgileriniz hatalı"),
+                message: "Giriş bilgileriniz hatalı"));
+          }
+        });
       } on FirebaseAuthException catch (e) {
-        // FirebaseAuthException durumunda hata yakalanabilir
-        if (e.code == 'user-not-found') {
-          // Kullanıcı bulunamadı hatası
-          print('No user found for that email.');
-        } else if (e.code == 'wrong-password') {
-          // Yanlış şifre hatası
-          print('Wrong password provided for that user.');
+        emit(state.copyWith(appStatus: SubmissionFailed(e)));
+        switch (e.code) {
+          case "invalid-email":
+            emit(state.copyWith(
+              appStatus: SubmissionFailed(e.code),
+              message: "Girdiğiniz eposta adresi geçersizdir.",
+            ));
+            break;
+          case "user-disabled":
+            emit(state.copyWith(
+              appStatus: SubmissionFailed(e.code),
+              message:
+                  "Hesabınız engellendi.\nLütfen yönetmenizi denetleyin ve tekrar giriş yapmayı deneyin.",
+            ));
+            break;
+          case "user-not-found":
+            emit(state.copyWith(
+              appStatus: SubmissionFailed(e.code),
+              message:
+                  "Bu kullanıcı bulunamadı.\nYeni kaydolmak ister misiniz?",
+            ));
+            break;
+          case "wrong-password":
+            emit(state.copyWith(
+              appStatus: SubmissionFailed(e.code),
+              message:
+                  "Girmiş olduğunuz parola hatalı.\nTekdaha deneyebilirsiniz.",
+            ));
+            break;
+          default:
+            emit(state.copyWith(
+                appStatus: SubmissionFailed(e.code),
+                message:
+                    "Bir hata oluştu. Lütfen daha sonra tekrar deneyin veya yönetmenize başvurun."));
+
+            throw Exception("An undefined error occurred.");
         }
-        // Firebase tarafından gelen diğer hataların kontrolü burada yapılabilir
-        print(e.toString());
-        return;
       }
     });
   }

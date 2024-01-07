@@ -7,9 +7,14 @@ import 'package:sorun_bildirim_uygulamasi/core/extension/context_extension.dart'
 import 'package:sorun_bildirim_uygulamasi/core/init/navigation/app_router.gr.dart';
 
 @RoutePage()
-class HomeView extends StatelessWidget {
+class HomeView extends StatefulWidget {
   const HomeView({super.key});
 
+  @override
+  State<HomeView> createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<User?>(
@@ -54,7 +59,9 @@ class HomeView extends StatelessWidget {
                   actions: [
                     IconButton(
                         onPressed: () {
-                          context.router.push(const LoginRoute());
+                          context.router.push(
+                            const LoginRoute(),
+                          );
                         },
                         icon: const Icon(Icons.login_sharp))
                   ],

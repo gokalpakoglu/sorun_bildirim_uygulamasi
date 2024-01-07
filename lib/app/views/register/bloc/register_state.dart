@@ -2,18 +2,18 @@ part of 'register_bloc.dart';
 
 class RegisterState extends Equatable {
   const RegisterState({
-    this.errorMsg,
-    this.emailErrorMsg,
-    this.passwordErrorMsg,
-    this.nameErrorMsg,
-    this.surnameErrorMsg,
+    this.message = '',
+    this.emailErrorMsg = '',
+    this.passwordErrorMsg = '',
+    this.nameErrorMsg = '',
+    this.surnameErrorMsg = '',
     this.email = '',
     this.password = '',
     this.name = '',
     this.surname = '',
     this.lat = 0.0,
     this.lng = 0.0,
-    this.appStatus = AppStatus.initial,
+    this.appStatus = const InitialStatus(),
     this.marker = const {},
   });
 
@@ -32,33 +32,26 @@ class RegisterState extends Equatable {
   final String? passwordErrorMsg;
   final String? nameErrorMsg;
   final String? surnameErrorMsg;
-  final String? errorMsg;
+  final String? message;
 
   final double lat;
   final double lng;
 
-  final AppStatus appStatus;
+  final AppSubmissionStatus appStatus;
 
   final Set<Marker> marker;
-
-  factory RegisterState.initial() {
-    return const RegisterState(errorMsg: null);
-  }
-  factory RegisterState.error(String message) {
-    return RegisterState(errorMsg: message, appStatus: AppStatus.error);
-  }
 
   RegisterState copyWith(
       {String? email,
       String? password,
-      AppStatus? appStatus,
+      AppSubmissionStatus? appStatus,
       String? name,
       String? surname,
       String? emailErrorMsg,
       String? passwordErrorMsg,
       String? nameErrorMsg,
       String? surnameErrorMsg,
-      String? errorMsg,
+      String? message,
       double? lat,
       double? lng,
       Set<Marker>? marker}) {
@@ -72,7 +65,7 @@ class RegisterState extends Equatable {
       passwordErrorMsg: password != null ? '' : passwordErrorMsg,
       nameErrorMsg: name != null ? '' : nameErrorMsg,
       surnameErrorMsg: surname != null ? '' : surnameErrorMsg,
-      errorMsg: errorMsg,
+      message: message ?? this.message,
       lat: lat ?? this.lat,
       lng: lng ?? this.lng,
       marker: marker ?? this.marker,
@@ -94,16 +87,4 @@ class RegisterState extends Equatable {
         nameErrorMsg,
         surnameErrorMsg
       ];
-}
-
-enum AppStatus {
-  initial,
-  loading,
-  loaded,
-  error;
-
-  bool get isInitial => this == AppStatus.initial;
-  bool get isLoading => this == AppStatus.loading;
-  bool get isLoaded => this == AppStatus.loaded;
-  bool get isError => this == AppStatus.error;
 }

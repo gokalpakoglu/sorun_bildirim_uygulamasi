@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:sorun_bildirim_uygulamasi/core/blocs/bloc_status.dart';
 import 'package:sorun_bildirim_uygulamasi/core/init/models/app_user.dart';
 import 'package:sorun_bildirim_uygulamasi/core/init/service/firebase_service.dart';
 
@@ -16,7 +17,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   final authSerivce = FirebaseAuthService();
 
   final Completer<GoogleMapController> mapController = Completer();
-  RegisterBloc() : super(RegisterState.initial()) {
+  RegisterBloc() : super(const RegisterState()) {
     on<RegisterEmailChanged>((event, emit) {
       emit(state.copyWith(
           email: event.email,
@@ -52,30 +53,24 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
       debugPrint(selectedMarker.toString());
     });
     on<RegisterSubmitted>((event, emit) async {
-      var existingUser = await authSerivce.checkExistingUser(state.email);
+      emit(state.copyWith(appStatus: FormSubmitting()));
       try {
-        if (existingUser == true) {
-          emit(state.copyWith(
-            errorMsg: 'Bu e-posta adresi zaten kullanılıyor.',
-            appStatus: AppStatus.error,
-          ));
-          throw "Bu e-posta adresi ile kayıtlı bir hesap bulunmaktadır.";
-        } else {
-          AppUser user = AppUser(
-            email: state.email,
-            name: state.name,
-            surname: state.surname,
-            lat: state.lat,
-            lng: state.lng,
-            password: state.password,
-          );
-          debugPrint(user.toString());
+        AppUser user = AppUser(
+          email: state.email,
+          name: state.name,
+          surname: state.surname,
+          lat: state.lat,
+          lng: state.lng,
+          password: state.password,
+        );
+        debugPrint(user.toString());
 
-          await authSerivce.registerUser(user);
-          emit(state.copyWith(appStatus: AppStatus.loaded));
-        }
+        await authSerivce.registerUser(user);
+        emit(state.copyWith(
+          appStatus: const SubmissionSuccess(),
+        ));
       } on FirebaseAuthException catch (e) {
-        emit(state.copyWith(appStatus: AppStatus.error, errorMsg: e.code));
+        emit(state.copyWith(appStatus: SubmissionFailed(e.code)));
       } catch (e) {
         // Genel hata durumu...
       }
