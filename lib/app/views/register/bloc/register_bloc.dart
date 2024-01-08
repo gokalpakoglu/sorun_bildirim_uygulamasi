@@ -70,9 +70,44 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
           appStatus: const SubmissionSuccess(),
         ));
       } on FirebaseAuthException catch (e) {
-        emit(state.copyWith(appStatus: SubmissionFailed(e.code)));
-      } catch (e) {
-        // Genel hata durumu...
+        switch (e.code) {
+          case "invalid-email":
+            emit(
+              state.copyWith(
+                  appStatus: SubmissionFailed(e.code),
+                  message:
+                      'Girilen eposta adresi geçersizdir. Lütfen doğru bir eposta adresi girin.'),
+            );
+            break;
+          case "weak-password":
+            emit(
+              state.copyWith(
+                  appStatus: SubmissionFailed(e.code),
+                  message: 'Parolanız en az 6 karakter olmalıdır.'),
+            );
+            break;
+          case "email-already-in-use":
+            emit(
+              state.copyWith(
+                  appStatus: SubmissionFailed(e.code),
+                  message:
+                      'Bu eposta adresi zaten kullanımda. Lütfen farklı bir eposta adresi kullanarak tekrar deneyin.'),
+            );
+            break;
+          case "operation-not-allowed":
+            emit(state.copyWith(
+                appStatus: SubmissionFailed(e.code),
+                message:
+                    'Bu işlem sunucuda devre dışı bırakıldı.\nLütfen daha sonra tekrar deneyiniz.'));
+            break;
+          default:
+            emit(state.copyWith(
+                appStatus: SubmissionFailed(e.code),
+                message:
+                    "Bir hata oluştu. Lütfen daha sonra tekrar deneyin veya yönetmenize başvurun."));
+
+            throw Exception("An undefined error occurred.");
+        }
       }
     });
 

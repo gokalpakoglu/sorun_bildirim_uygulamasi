@@ -7,34 +7,31 @@ class FirebaseAuthService {
   final _firebaseStore = FirebaseFirestore.instance;
 
   Future<AppUser?> registerUser(AppUser user) async {
-    try {
-      final UserCredential userCredential =
-          await _firebaseAuth.createUserWithEmailAndPassword(
-              email: user.email!, password: user.password!);
-      await _firebaseStore
-          .collection("users")
-          .doc(_firebaseAuth.currentUser!.uid)
-          .set({
-        "name": user.name,
-        "surname": user.surname,
-        "email": user.email,
-        "lat": user.lat,
-        "lng": user.lng,
-      });
-      final User? firebaseUser = userCredential.user;
-      if (firebaseUser != null) {
-        return AppUser(
-          name: user.name,
-          email: user.email,
-          surname: user.surname,
-          lat: user.lat,
-          lng: user.lng,
-          password: user.password,
-        );
-      }
-    } on FirebaseAuthException catch (e) {
-      print(e.toString());
+    final UserCredential userCredential =
+        await _firebaseAuth.createUserWithEmailAndPassword(
+            email: user.email!, password: user.password!);
+    await _firebaseStore
+        .collection("users")
+        .doc(_firebaseAuth.currentUser!.uid)
+        .set({
+      "name": user.name,
+      "surname": user.surname,
+      "email": user.email,
+      "lat": user.lat,
+      "lng": user.lng,
+    });
+    final User? firebaseUser = userCredential.user;
+    if (firebaseUser != null) {
+      return AppUser(
+        name: user.name,
+        email: user.email,
+        surname: user.surname,
+        lat: user.lat,
+        lng: user.lng,
+        password: user.password,
+      );
     }
+
     return null;
   }
 
