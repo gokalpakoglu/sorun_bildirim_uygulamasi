@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:sorun_bildirim_uygulamasi/core/blocs/bloc_status.dart';
 import 'package:sorun_bildirim_uygulamasi/core/init/models/problem_model.dart';
 import 'package:sorun_bildirim_uygulamasi/core/init/service/database_service.dart';
 import 'package:sorun_bildirim_uygulamasi/core/init/service/firebase_service.dart';
@@ -54,6 +55,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       emit(state.copyWith(images: updatedImages));
     });
     on<AddReportSubmitted>((event, emit) async {
+      emit(state.copyWith(appStatus: FormSubmitting()));
       try {
         List<String> imageUrls = [];
 
@@ -71,8 +73,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         );
         await databaseService.addProblem(model);
         emit(state.copyWith(images: []));
+        emit(state.copyWith(appStatus: const SubmissionSuccess()));
       } catch (e) {
-        print('Hata oluştu: $e');
+        emit(state.copyWith(appStatus: SubmissionFailed(e)));
       }
     });
   }

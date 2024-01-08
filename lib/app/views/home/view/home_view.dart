@@ -19,12 +19,14 @@ class _HomeViewState extends State<HomeView> {
   Widget build(BuildContext context) {
     return StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (context, snapshot) => (snapshot.hasData)
-            ? Scaffold(
-                appBar: AppBarWidget(
-                  title: context.loc.appTitle,
-                  actions: [
-                    IconButton(
+        builder: (context, snapshot) {
+          bool userHasData = snapshot.hasData;
+          return Scaffold(
+            appBar: AppBarWidget(
+              title: context.loc.appTitle,
+              actions: [
+                userHasData
+                    ? IconButton(
                         onPressed: () {
                           showDialog(
                               barrierDismissible: false,
@@ -48,25 +50,18 @@ class _HomeViewState extends State<HomeView> {
                                     ],
                                   ));
                         },
-                        icon: const Icon(Icons.logout_rounded)),
-                  ],
-                ),
-                body: const BodyWidget(),
-              )
-            : Scaffold(
-                appBar: AppBarWidget(
-                  title: context.loc.appTitle,
-                  actions: [
-                    IconButton(
+                        icon: const Icon(Icons.logout_rounded))
+                    : IconButton(
                         onPressed: () {
                           context.router.push(
                             const LoginRoute(),
                           );
                         },
-                        icon: const Icon(Icons.login_sharp))
-                  ],
-                ),
-                body: const BodyWidget(),
-              ));
+                        icon: const Icon(Icons.login_sharp)),
+              ],
+            ),
+            body: userHasData ? const BodyWidget() : const BodyWidget(),
+          );
+        });
   }
 }
