@@ -105,7 +105,6 @@ class _BodyWidgetState extends State<BodyWidget> {
                                   ? () async {
                                       BlocProvider.of<LoginBloc>(context)
                                           .add(LoginSubmitted());
-                                      print(state.appStatus);
                                     }
                                   : null,
                           child: Text(

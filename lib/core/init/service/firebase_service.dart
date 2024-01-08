@@ -39,31 +39,16 @@ class FirebaseAuthService {
   }
 
   Future<AppUser?> loginUser(String email, String password) async {
-    try {
-      final UserCredential userCredential = await _firebaseAuth
-          .signInWithEmailAndPassword(email: email, password: password);
-      final User? firebaseUser = userCredential.user;
-      if (firebaseUser == null) {
-        throw ArgumentError('No user found for the given credentials!');
-      }
-      // Burada başarılı giriş durumunda dönüş yapabilirsiniz
-      return AppUser(
-        email: firebaseUser.email,
-        // Diğer kullanıcı bilgileri
-      );
-    } on FirebaseAuthException catch (e) {
-      // FirebaseAuthException durumunda hata yakalanabilir
-      if (e.code == 'user-not-found') {
-        // Kullanıcı bulunamadı hatası
-        print('No user found for that email.');
-      } else if (e.code == 'wrong-password') {
-        // Yanlış şifre hatası
-        print('Wrong password provided for that user.');
-      }
-      // Firebase tarafından gelen diğer hataların kontrolü burada yapılabilir
-      print(e.toString());
-      return null;
+    final UserCredential userCredential = await _firebaseAuth
+        .signInWithEmailAndPassword(email: email, password: password);
+    final User? firebaseUser = userCredential.user;
+    if (firebaseUser == null) {
+      throw ArgumentError('No user found for the given credentials!');
     }
+
+    return AppUser(
+      email: firebaseUser.email,
+    );
   }
 
   Future<AppUser?> updateUser(AppUser user) async {

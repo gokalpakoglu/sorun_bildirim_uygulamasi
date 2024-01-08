@@ -25,25 +25,27 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     on<LoginSubmitted>((event, emit) async {
       emit(state.copyWith(appStatus: FormSubmitting()));
       try {
-        await _firebaseAuthService
-            .loginUser(state.email, state.password)
-            .then((value) {
-          if (value != null) {
-            emit(state.copyWith(appStatus: const SubmissionSuccess()));
-          } 
-          else {
-            emit(state.copyWith(
-                appStatus: SubmissionFailed("Giriş bilgileriniz hatalı"),
-                message: "Giriş bilgileriniz hatalı"));
-          }
-        });
+        await _firebaseAuthService.loginUser(state.email, state.password);
+        emit(state.copyWith(appStatus: const SubmissionSuccess()));
       } on FirebaseAuthException catch (e) {
-        emit(state.copyWith(appStatus: SubmissionFailed(e)));
         switch (e.code) {
           case "invalid-email":
             emit(state.copyWith(
               appStatus: SubmissionFailed(e.code),
               message: "Girdiğiniz eposta adresi geçersizdir.",
+            ));
+            break;
+          case "wrong-password":
+            emit(state.copyWith(
+              appStatus: SubmissionFailed(e.code),
+              message:
+                  "Girmiş olduğunuz parola hatalı.\nTekdaha deneyebilirsiniz.",
+            ));
+            break;
+          case "invalid-credential":
+            emit(state.copyWith(
+              appStatus: SubmissionFailed(e.code),
+              message: "Hatalı bilgi girdiniz",
             ));
             break;
           case "user-disabled":
@@ -58,13 +60,6 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
               appStatus: SubmissionFailed(e.code),
               message:
                   "Bu kullanıcı bulunamadı.\nYeni kaydolmak ister misiniz?",
-            ));
-            break;
-          case "wrong-password":
-            emit(state.copyWith(
-              appStatus: SubmissionFailed(e.code),
-              message:
-                  "Girmiş olduğunuz parola hatalı.\nTekdaha deneyebilirsiniz.",
             ));
             break;
           default:
