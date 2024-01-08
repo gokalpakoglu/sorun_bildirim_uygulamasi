@@ -43,6 +43,12 @@ class HomeAnimateCamera extends HomeEvent {
   List<Object?> get props => [cameraPosition];
 }
 
+class InitialHome extends HomeEvent {
+  InitialHome();
+  @override
+  List<Object?> get props => [];
+}
+
 class AddReportSubmitted extends HomeEvent {
   AddReportSubmitted();
   @override

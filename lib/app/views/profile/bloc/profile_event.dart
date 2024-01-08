@@ -37,6 +37,12 @@ class ProfileAnimateCamera extends ProfileEvent {
   List<Object?> get props => [cameraPosition];
 }
 
+class InitialProfile extends ProfileEvent {
+  InitialProfile();
+  @override
+  List<Object?> get props => [];
+}
+
 class ProfileSubmitted extends ProfileEvent {
   ProfileSubmitted();
 

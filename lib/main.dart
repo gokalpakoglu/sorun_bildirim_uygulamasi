@@ -16,6 +16,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await FlutterConfig.loadEnvVariables();
+
   runApp(MultiBlocProvider(
     providers: [
       BlocProvider<RegisterBloc>(create: (context) => RegisterBloc()),
@@ -23,13 +24,13 @@ void main() async {
         create: (context) => LoginBloc(),
       ),
       BlocProvider<ProfileBloc>(
-        create: (context) => ProfileBloc(),
+        create: (context) => ProfileBloc()..add(InitialProfile()),
       ),
       BlocProvider<AppSettingsBloc>(
         create: (context) => AppSettingsBloc(),
       ),
       BlocProvider<HomeBloc>(
-        create: (context) => HomeBloc(),
+        create: (context) => HomeBloc()..add(InitialHome()),
       )
     ],
     child: MyApp(),

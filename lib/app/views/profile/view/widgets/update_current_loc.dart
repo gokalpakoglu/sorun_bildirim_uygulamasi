@@ -23,8 +23,8 @@ class _UpdateCurrentLocationViewState extends State<UpdateCurrentLocationView> {
         builder: (context, state) {
           debugPrint(state.marker.toString());
           return GoogleMap(
-            initialCameraPosition:
-                CameraPosition(target: LatLng(state.lat, state.lng), zoom: 10),
+            initialCameraPosition: CameraPosition(
+                target: LatLng(state.user?.lat ?? 0.0 , state.user?.lat ?? 0.0), zoom: 10),
             markers: state.marker,
             zoomControlsEnabled: false,
             mapType: MapType.normal,

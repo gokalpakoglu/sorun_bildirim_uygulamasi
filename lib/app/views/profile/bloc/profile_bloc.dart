@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -46,56 +48,50 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       }
     });
     on<ProfileAnimateCamera>((event, emit) async {});
+    on<InitialProfile>(
+      (event, emit) async {
+        emit(state.copyWith(appStatus: SubmissionLoading()));
+        var userDoc = await FirebaseFirestore.instance
+            .collection("users")
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .get();
 
-    // on<ProfileSubmitted>((event, emit) async {
-    //   try {
-    //     // Güncellenecek verileri içeren AppUser nesnesi oluştur
-    //     AppUser user = AppUser(
-    //       name: state.name,
-    //       surname: state.surname,
-    //       lat: state.lat,
-    //       lng: state.lng,
-    //     );
+        if (userDoc.exists) {
+          var userData = userDoc.data();
 
-    //     // Firestore üzerindeki kullanıcı bilgilerini güncelle
-    //     auth.updateUser(user);
-    //     debugPrint(user.toString());
-
-    //     // State'i güncelle, sadece name ve surname alanları
-    //   } catch (e) {
-    //     // Hata durumunda yapılacak işlemler
-    //     debugPrint('Hata: $e');
-    //     // Hata durumunu state'e yansıtabilir ya da farklı bir şekilde kullanıcıya bildirebilirsiniz
-    //   }
-    // });
+          AppUser user = AppUser(
+            name: userData?["name"] ?? "",
+            surname: userData?["surname"] ?? "",
+            lat: userData?["lat"] ?? 0.0,
+            lng: userData?["lng"] ?? 0.0,
+          );
+          emit(
+              state.copyWith(appStatus: const SubmissionSuccess(), user: user));
+        }
+      },
+    );
     on<ProfileSubmitted>((event, emit) async {
       try {
-        // Güncellenecek verileri içeren AppUser nesnesi oluştur
         AppUser user = AppUser(
-          name: state.name,
-          surname: state.surname,
-          lat: state.lat,
-          lng: state.lng,
+          name: state.name ?? state.user?.name,
+          surname: state.surname ?? state.user?.surname,
+          lat: state.lat ?? state.user?.lat,
+          lng: state.lng ?? state.user?.lng,
         );
 
         debugPrint(user.toString());
 
-        // Sadece bir alan güncellenmişse Firestore üzerindeki kullanıcı bilgilerini güncelle
-        if (user.name != state.name ||
-            user.surname != state.surname ||
-            user.lat != state.lat ||
-            user.lng != state.lng) {
-          auth.updateUser(user);
-        }
-        // State'i güncelle, sadece name ve surname alanları
-        // Eğer veri güncelleme işlemi yapılmadıysa state'i değiştirmeyin
-        // Bu durumda mevcut state'i emit etmek yerine, state'i aynı olarak emit edin
-        // Yani, bir değişiklik yapılmadığı durumda state'i aynı olarak döndürün
-        emit(state);
+        await auth.updateUser(user);
+        emit(state.copyWith(
+            appStatus: FormSubmitting(),
+            message: "Bilgileriniz başarıyla güncellendi",
+            user: user));
+
+        // emit(state);
       } catch (e) {
-        // Hata durumunda yapılacak işlemler
         debugPrint('Hata: $e');
-        // Hata durumunu state'e yansıtabilir ya da farklı bir şekilde kullanıcıya bildirebilirsiniz
+        emit(state.copyWith(
+            appStatus: SubmissionFailed(e), message: e.toString()));
       }
     });
   }

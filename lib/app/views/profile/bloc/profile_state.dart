@@ -2,49 +2,57 @@ part of 'profile_bloc.dart';
 
 class ProfileState extends Equatable {
   const ProfileState({
-    this.nameErrorMsg,
-    this.surnameErrorMsg,
-    this.name = '',
-    this.surname = '',
-    this.lat = 0.0,
-    this.lng = 0.0,
+    this.user,
+    this.nameErrorMsg = '',
+    this.surnameErrorMsg = '',
+    this.name,
+    this.surname,
+    this.lat,
+    this.lng,
     this.appStatus = const InitialStatus(),
     this.marker = const {},
+    this.message = '',
   });
 
-  final String name;
-  bool get isValidName => name.isNotEmpty;
-  final String surname;
-  bool get isValidSurname => surname.isNotEmpty;
+  final String? name;
+  bool get isValidName => name?.isNotEmpty ?? false;
+  final String? surname;
+  bool get isValidSurname => surname?.isNotEmpty ?? false;
 
-  final double lat;
-  final double lng;
+  final double? lat;
+  final double? lng;
 
-  final String? nameErrorMsg;
-  final String? surnameErrorMsg;
+  final String nameErrorMsg;
+  final String surnameErrorMsg;
+  final String message;
 
   final AppSubmissionStatus appStatus;
+  final AppUser? user;
 
   final Set<Marker> marker;
 
   ProfileState copyWith(
-      {AppSubmissionStatus? status,
+      {AppSubmissionStatus? appStatus,
       String? name,
       String? surname,
       String? nameErrorMsg,
       String? surnameErrorMsg,
+      String? message,
       double? lat,
       double? lng,
+      AppUser? user,
       Set<Marker>? marker}) {
     return ProfileState(
-      appStatus: appStatus,
+      appStatus: appStatus ?? this.appStatus,
       name: name ?? this.name,
       surname: surname ?? this.surname,
-      nameErrorMsg: name != null ? '' : nameErrorMsg,
-      surnameErrorMsg: surname != null ? '' : surnameErrorMsg,
+      nameErrorMsg: name != null ? '' : this.nameErrorMsg,
+      surnameErrorMsg: surname != null ? '' : this.surnameErrorMsg,
+      message: message ?? this.message,
       lat: lat ?? this.lat,
       lng: lng ?? this.lng,
       marker: marker ?? this.marker,
+      user: user ?? this.user,
     );
   }
 
@@ -57,6 +65,8 @@ class ProfileState extends Equatable {
         lng,
         marker,
         nameErrorMsg,
-        surnameErrorMsg
+        surnameErrorMsg,
+        message,
+        user
       ];
 }

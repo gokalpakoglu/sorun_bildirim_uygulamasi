@@ -97,23 +97,19 @@ class _BodyWidgetState extends State<BodyWidget> {
                     SizedBox(
                       height: 50,
                       width: double.infinity,
-                      child: BlocListener<LoginBloc, LoginState>(
-                        listener: (context, state) {},
-                        child: ElevatedButton(
-                          onPressed:
-                              (state.isValidEmail && state.isValidPassword)
-                                  ? () async {
-                                      BlocProvider.of<LoginBloc>(context)
-                                          .add(LoginSubmitted());
-                                    }
-                                  : null,
-                          child: Text(
-                            (state.appStatus is SubmissionLoading)
-                                ? '.......'
-                                : context.loc.login,
-                            style: const TextStyle(
-                              fontSize: 20,
-                            ),
+                      child: ElevatedButton(
+                        onPressed: (state.isValidEmail && state.isValidPassword)
+                            ? () async {
+                                BlocProvider.of<LoginBloc>(context)
+                                    .add(LoginSubmitted());
+                              }
+                            : null,
+                        child: Text(
+                          (state.appStatus is SubmissionLoading)
+                              ? '.......'
+                              : context.loc.login,
+                          style: const TextStyle(
+                            fontSize: 20,
                           ),
                         ),
                       ),
