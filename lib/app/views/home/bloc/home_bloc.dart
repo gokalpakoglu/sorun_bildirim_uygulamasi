@@ -2,13 +2,16 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sorun_bildirim_uygulamasi/core/blocs/bloc_status.dart';
+import 'package:sorun_bildirim_uygulamasi/core/init/models/app_user.dart';
 import 'package:sorun_bildirim_uygulamasi/core/init/models/problem_model.dart';
 import 'package:sorun_bildirim_uygulamasi/core/init/service/database_service.dart';
 import 'package:sorun_bildirim_uygulamasi/core/init/service/firebase_service.dart';
@@ -49,6 +52,35 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       }
     });
     on<HomeAnimateCamera>((event, emit) async {});
+    on<InitialHome>((event, emit) async {
+      emit(state.copyWith(appStatus: SubmissionLoading()));
+      List<Map<String, dynamic>> problems = [];
+      final snapshot = await FirebaseFirestore.instance
+          .collection('problems')
+          .get()
+          .timeout(const Duration(seconds: 20));
+
+      for (var doc in snapshot.docs) {
+        problems.add(doc.data());
+      }
+      emit(state.copyWith(
+          appStatus: const SubmissionSuccess(), problems: problems));
+      var userDoc = await FirebaseFirestore.instance
+          .collection("users")
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .get();
+
+      if (userDoc.exists) {
+        var userData = userDoc.data();
+
+        AppUser user = AppUser(
+          lat: userData?["lat"] ?? 0.0,
+          lng: userData?["lng"] ?? 0.0,
+        );
+
+        emit(state.copyWith(user: user, problems: problems));
+      }
+    });
     on<AddImages>((event, emit) {
       final List<dynamic> updatedImages = List.from(state.images)
         ..addAll(event.images);
@@ -81,6 +113,26 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 }
 
+// Future<List<Map<String, dynamic>>> getProblemsFromFirebase() async {
+//   List<Map<String, dynamic>> problems = [];
+
+//   try {
+//     final snapshot = await FirebaseFirestore.instance
+//         .collection('problems')
+//         .get()
+//         .timeout(const Duration(seconds: 20));
+
+//     for (var doc in snapshot.docs) {
+//       problems.add(doc.data());
+//     }
+
+//     return problems;
+//   } catch (e) {
+//     print('Veri alınırken bir hata oluştu: $e');
+//     return problems;
+//   }
+// }
+
 Future<String> uploadImageAndGetUrl(File imageFile) async {
   try {
     Reference reference =
@@ -91,8 +143,7 @@ Future<String> uploadImageAndGetUrl(File imageFile) async {
     String imageUrl = await storageTaskSnapshot.ref.getDownloadURL();
     return imageUrl;
   } catch (e) {
-    print('Resim yükleme hatası: $e');
-    return '';
+    return e.toString();
   }
 }
 

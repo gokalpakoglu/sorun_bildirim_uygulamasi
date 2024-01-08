@@ -2,15 +2,17 @@ part of 'home_bloc.dart';
 
 class HomeState extends Equatable {
   const HomeState({
+    this.user,
     this.images = const [],
     this.title = '',
     this.description = '',
     this.titleErrorMsg = '',
     this.descriptionErrorMsg = '',
     this.appStatus = const InitialStatus(),
-    this.lat = 0.0,
-    this.lng = 0.0,
+    this.lat,
+    this.lng,
     this.marker = const {},
+    this.problems = const [],
     this.message = '',
   });
   final String title;
@@ -20,9 +22,11 @@ class HomeState extends Equatable {
   final String titleErrorMsg;
   final String descriptionErrorMsg;
   final AppSubmissionStatus appStatus;
-  final double lat;
-  final double lng;
+  final AppUser? user;
+  final double? lat;
+  final double? lng;
   final Set<Marker> marker;
+  final List<Map<String, dynamic>> problems;
   final List images;
   final String message;
   HomeState copyWith({
@@ -31,10 +35,12 @@ class HomeState extends Equatable {
     String? titleErrorMsg,
     String? descriptionErrorMsg,
     AppSubmissionStatus? appStatus,
+    AppUser? user,
     double? lat,
     double? lng,
     Set<Marker>? marker,
     List? images,
+    List<Map<String, dynamic>>? problems,
     String? message,
   }) {
     return HomeState(
@@ -48,6 +54,8 @@ class HomeState extends Equatable {
       marker: marker ?? this.marker,
       images: images ?? this.images,
       message: message ?? this.message,
+      user: user ?? this.user,
+      problems: problems ?? this.problems,
     );
   }
 
@@ -63,5 +71,7 @@ class HomeState extends Equatable {
         marker,
         images,
         message,
+        user,
+        problems
       ];
 }

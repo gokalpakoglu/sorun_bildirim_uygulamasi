@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:sorun_bildirim_uygulamasi/core/init/models/app_user.dart';
 
 class FirebaseAuthService {
@@ -60,7 +61,7 @@ class FirebaseAuthService {
         "lng": user.lng,
       });
     } on FirebaseAuthException catch (e) {
-      print(e.toString());
+      debugPrint(e.toString());
     }
     return null;
   }
@@ -69,29 +70,6 @@ class FirebaseAuthService {
     final User? firebaseUser = _firebaseAuth.currentUser;
     if (firebaseUser != null) {
       await _firebaseAuth.signOut();
-    }
-  }
-
-// Returns true if email address is in use.
-  Future<bool> checkIfEmailInUse(String email) async {
-    try {
-      // Fetch sign-in methods for the email address
-      final list =
-          await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
-
-      // In case list is not empty
-      if (list.isNotEmpty) {
-        // Return true because there is an existing
-        // user using the email address
-        return true;
-      } else {
-        // Return false because email adress is not in use
-        return false;
-      }
-    } catch (error) {
-      // Handle error
-      // ...
-      return true;
     }
   }
 }

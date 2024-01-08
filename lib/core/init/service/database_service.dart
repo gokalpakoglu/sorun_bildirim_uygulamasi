@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:sorun_bildirim_uygulamasi/core/init/models/problem_model.dart';
 
 class DatabaseService {
@@ -16,7 +17,7 @@ class DatabaseService {
         'imageUrls': problemModel.imageUrls
       });
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
     }
   }
 }

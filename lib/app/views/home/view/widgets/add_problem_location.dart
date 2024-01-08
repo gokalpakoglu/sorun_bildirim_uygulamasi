@@ -1,6 +1,5 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -18,31 +17,22 @@ class AddProblemLocationView extends StatefulWidget {
 class _AddProblemLocationViewState extends State<AddProblemLocationView> {
   @override
   Widget build(BuildContext context) {
-    var user = FirebaseFirestore.instance
-        .collection("users")
-        .doc(FirebaseAuth.instance.currentUser!.uid);
     return Scaffold(
       appBar: AppBar(title: Text(context.loc.getCurrentLocation)),
       body: BlocBuilder<HomeBloc, HomeState>(
         builder: (context, state) {
-          debugPrint(state.marker.toString());
-          return StreamBuilder(
-              stream: user.snapshots(),
-              builder: (context, AsyncSnapshot snapshot) {
-                return GoogleMap(
-                  initialCameraPosition: CameraPosition(
-                      target:
-                          LatLng(snapshot.data["lat"], snapshot.data["lng"]),
-                      zoom: 14),
-                  markers: state.marker,
-                  zoomControlsEnabled: false,
-                  mapType: MapType.normal,
-                  onMapCreated: (controller) {
-                    BlocProvider.of<HomeBloc>(context)
-                        .add(HomeMapCreated(controller: controller));
-                  },
-                );
-              });
+          return GoogleMap(
+            initialCameraPosition: CameraPosition(
+                target: LatLng(state.user?.lat ?? 0.0, state.user?.lng ?? 0.0),
+                zoom: 14),
+            markers: state.marker,
+            zoomControlsEnabled: false,
+            mapType: MapType.normal,
+            onMapCreated: (controller) {
+              BlocProvider.of<HomeBloc>(context)
+                  .add(HomeMapCreated(controller: controller));
+            },
+          );
         },
       ),
       floatingActionButton: FloatingActionButton.extended(

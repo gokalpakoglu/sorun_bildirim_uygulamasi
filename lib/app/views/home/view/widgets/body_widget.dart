@@ -1,11 +1,11 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sorun_bildirim_uygulamasi/app/views/home/bloc/home_bloc.dart';
-import 'package:sorun_bildirim_uygulamasi/app/views/home/view/widgets/showModalProblems.dart';
+import 'package:sorun_bildirim_uygulamasi/core/blocs/bloc_status.dart';
+import 'package:sorun_bildirim_uygulamasi/core/extension/context_extension.dart';
 import 'package:sorun_bildirim_uygulamasi/core/init/navigation/app_router.gr.dart';
 
 class BodyWidget extends StatefulWidget {
@@ -21,123 +21,167 @@ class _BodyWidgetState extends State<BodyWidget> {
     zoom: 14.4746,
   );
 
-  final Future<List<Map<String, dynamic>>> _problems =
-      getProblemsFromFirebase();
-  @override
-  void initState() {
-    getProblemsFromFirebase();
-    _problems;
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     bool isUser = FirebaseAuth.instance.currentUser != null;
-    return BlocBuilder<HomeBloc, HomeState>(
-      builder: (context, state) {
-        var user = FirebaseFirestore.instance
-            .collection("users")
-            .doc(FirebaseAuth.instance.currentUser?.uid);
-        return Scaffold(
-          body: StreamBuilder(
-            stream: user.snapshots(),
-            builder: (context, AsyncSnapshot snapshot) {
-              if (snapshot.connectionState == ConnectionState.active) {
-                return FutureBuilder(
-                    future: _problems,
-                    builder: (BuildContext context,
-                        AsyncSnapshot<List<Map<String, dynamic>>>
-                            problemSnapshot) {
-                      if (problemSnapshot.connectionState ==
-                          ConnectionState.done) {
-                        if (problemSnapshot.hasData &&
-                            problemSnapshot.data!.isNotEmpty) {
-                          List<Map<String, dynamic>> problemsData =
-                              problemSnapshot.data!;
-
-                          Set<Marker> markers =
-                              Set<Marker>.of(problemsData.map((problem) {
-                            return Marker(
-                              markerId: const MarkerId(""),
-                              position: LatLng(problem['lat'], problem['lng']),
-                              infoWindow: InfoWindow(
-                                title: problem['title'],
-                                snippet: problem['description'],
-                              ),
-                              onTap: () {
-                                showModalProblems(context, problem);
-                              },
-                            );
-                          }));
-                          return GoogleMap(
-                              mapType: MapType.normal,
-                              initialCameraPosition: isUser
-                                  ? CameraPosition(
-                                      target: LatLng(snapshot.data["lat"],
-                                          snapshot.data["lng"]),
-                                      zoom: 14)
-                                  : _kGooglePlex,
-                              markers: markers,
-                              onMapCreated: (GoogleMapController controller) {
-                                BlocProvider.of<HomeBloc>(context).add(
-                                    HomeMapCreated(controller: controller));
-                              });
-                        } else {
-                          return GoogleMap(
-                              mapType: MapType.normal,
-                              initialCameraPosition: isUser
-                                  ? CameraPosition(
-                                      target: LatLng(snapshot.data["lat"],
-                                          snapshot.data["lng"]),
-                                      zoom: 14)
-                                  : _kGooglePlex,
-                              onMapCreated: (GoogleMapController controller) {
-                                BlocProvider.of<HomeBloc>(context).add(
-                                    HomeMapCreated(controller: controller));
-                              });
-                        }
-                      } else {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-                    });
-              } else {
-                return const Text('Lütfen bir konuma tıklayın');
-              }
-            },
-          ),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.startDocked,
-          floatingActionButton: isUser
-              ? FloatingActionButton.extended(
-                  onPressed: () {
-                    context.router.push(const AddProblemRoute());
-                  },
-                  label: const Text('Sorun Bildir'),
-                  icon: const Icon(Icons.report_problem),
-                )
-              : const SizedBox.shrink(),
-        );
-      },
-    );
+    return BlocConsumer<HomeBloc, HomeState>(
+        listener: (context, state) {},
+        builder: (context, state) {
+          switch (state.appStatus) {
+            case InitialStatus() || SubmissionLoading():
+              return const Center(child: CircularProgressIndicator());
+            case SubmissionSuccess() || FormSubmitting():
+              return Scaffold(
+                body: GoogleMap(
+                    mapType: MapType.normal,
+                    initialCameraPosition: isUser
+                        ? CameraPosition(
+                            target: LatLng(state.user?.lat ?? 38.423733,
+                                state.user?.lng ?? 27.142826),
+                            zoom: 14)
+                        : _kGooglePlex,
+                    markers: getMarkers(state.problems, context),
+                    onMapCreated: (GoogleMapController controller) {
+                      BlocProvider.of<HomeBloc>(context)
+                          .add(HomeMapCreated(controller: controller));
+                    }),
+                floatingActionButtonLocation:
+                    FloatingActionButtonLocation.startFloat,
+                floatingActionButton: isUser
+                    ? FloatingActionButton.extended(
+                        onPressed: () {
+                          context.router.push(const AddProblemRoute());
+                        },
+                        label: const Text('Sorun Bildir'),
+                        icon: const Icon(Icons.report_problem),
+                      )
+                    : const SizedBox.shrink(),
+              );
+            default:
+              return Container();
+          }
+        });
   }
-}
 
-Future<List<Map<String, dynamic>>> getProblemsFromFirebase() async {
-  List<Map<String, dynamic>> problems = [];
-
-  try {
-    final snapshot = await FirebaseFirestore.instance
-        .collection('problems')
-        .get()
-        .timeout(const Duration(seconds: 20));
-
-    for (var doc in snapshot.docs) {
-      problems.add(doc.data());
-    }
-
-    return problems;
-  } catch (e) {
-    print('Veri alınırken bir hata oluştu: $e');
-    return problems;
+  Set<Marker> getMarkers(
+      List<Map<String, dynamic>> problemsData, BuildContext context) {
+    return Set<Marker>.of(problemsData.map((problem) {
+      return Marker(
+        markerId: MarkerId("${problem['lat']}${problem['lng']}"),
+        position: LatLng(problem['lat'], problem['lng']),
+        infoWindow: InfoWindow(
+          title: problem['title'],
+          snippet: problem['description'],
+        ),
+        onTap: () {
+          showModalBottomSheet<void>(
+            context: context,
+            builder: (BuildContext context) {
+              return SingleChildScrollView(
+                child: Padding(
+                  padding: context.verticalPaddingLow +
+                      context.horizontalPaddingMedium,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: Padding(
+                              padding: context.horizontalPaddingHigh,
+                              child: const Divider(
+                                thickness: 3,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 0,
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.pop(context);
+                              },
+                              child: const Icon(Icons.close),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Expanded(
+                            child: Text(
+                              "Problem title",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          Expanded(
+                            child: Text(problem["title"],
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold)),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Expanded(
+                            child: Text(
+                              "Problem description",
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          Expanded(
+                            child: Text(problem["description"],
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold)),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        "Problem Pictures:",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 8),
+                      Center(
+                        child: Column(
+                          children: List.generate(
+                            problem['imageUrls'].length,
+                            (index) => GestureDetector(
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (_) => Dialog(
+                                    child: Image.network(
+                                      problem['imageUrls'][index],
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: Image.network(
+                                  problem['imageUrls'][index],
+                                  height: 250,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      );
+    }));
   }
 }

@@ -39,7 +39,9 @@ class _HomeViewState extends State<HomeView> {
                                         onPressed: () async {
                                           await FirebaseAuth.instance.signOut();
                                           // ignore: use_build_context_synchronously
-                                          context.router.popUntilRoot();
+                                          context.router.pushAndPopUntil(
+                                              const MainRoute(),
+                                              predicate: (_) => false);
                                         },
                                         child: const Text("Tamam"),
                                       ),
