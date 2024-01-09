@@ -32,8 +32,7 @@ class _HomeViewState extends State<HomeView> {
                               barrierDismissible: false,
                               context: context,
                               builder: (_) => AlertDialog(
-                                    content:
-                                        const Text('Çıkış Yapmak İstiyorm?'),
+                                    content: Text(context.loc.logOut),
                                     actions: [
                                       ElevatedButton(
                                         onPressed: () async {
@@ -43,12 +42,12 @@ class _HomeViewState extends State<HomeView> {
                                               const MainRoute(),
                                               predicate: (_) => false);
                                         },
-                                        child: const Text("Tamam"),
+                                        child: Text(context.loc.ok),
                                       ),
                                       TextButton(
                                           onPressed: () =>
                                               Navigator.of(context).pop(),
-                                          child: const Text("Vazgeç")),
+                                          child: Text(context.loc.no)),
                                     ],
                                   ));
                         },

@@ -113,26 +113,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 }
 
-// Future<List<Map<String, dynamic>>> getProblemsFromFirebase() async {
-//   List<Map<String, dynamic>> problems = [];
-
-//   try {
-//     final snapshot = await FirebaseFirestore.instance
-//         .collection('problems')
-//         .get()
-//         .timeout(const Duration(seconds: 20));
-
-//     for (var doc in snapshot.docs) {
-//       problems.add(doc.data());
-//     }
-
-//     return problems;
-//   } catch (e) {
-//     print('Veri alınırken bir hata oluştu: $e');
-//     return problems;
-//   }
-// }
-
 Future<String> uploadImageAndGetUrl(File imageFile) async {
   try {
     Reference reference =

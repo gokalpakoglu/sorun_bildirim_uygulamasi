@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_config/flutter_config.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:sorun_bildirim_uygulamasi/app/app.dart';
 import 'package:sorun_bildirim_uygulamasi/app/views/app_settings/bloc/app_settings_bloc.dart';
 import 'package:sorun_bildirim_uygulamasi/app/views/home/bloc/home_bloc.dart';
@@ -16,6 +17,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await FlutterConfig.loadEnvVariables();
+  await GetStorage.init();
 
   runApp(MultiBlocProvider(
     providers: [
@@ -27,7 +29,7 @@ void main() async {
         create: (context) => ProfileBloc()..add(InitialProfile()),
       ),
       BlocProvider<AppSettingsBloc>(
-        create: (context) => AppSettingsBloc(),
+        create: (context) => AppSettingsBloc()..add(const InitialAppSettings()),
       ),
       BlocProvider<HomeBloc>(
         create: (context) => HomeBloc()..add(InitialHome()),

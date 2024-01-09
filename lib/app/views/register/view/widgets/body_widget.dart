@@ -28,14 +28,14 @@ class _BodyWidgetState extends State<BodyWidget> {
           showDialog(
               context: context,
               builder: (_) => AlertDialog(
-                    title: const Text("Hata"),
+                    title: Text(context.loc.errorTitle),
                     content: Text(state.message!),
                     actions: [
                       TextButton(
                           onPressed: () {
                             Navigator.pop(context);
                           },
-                          child: const Text("Tamam"))
+                          child: Text(context.loc.ok))
                     ],
                   ));
         }
@@ -55,9 +55,9 @@ class _BodyWidgetState extends State<BodyWidget> {
                   TextFormField(
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return "Bu alan boş kalamaz";
+                        return context.loc.emptyField;
                       } else if (!value.contains("@")) {
-                        return "Lütfen geçerli bir e-posta adresi girin";
+                        return context.loc.validEmail;
                       }
                       return null;
                     },
@@ -76,9 +76,9 @@ class _BodyWidgetState extends State<BodyWidget> {
                     obscureText: true,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return "Bu alan boş kalamaz";
+                        return context.loc.emptyField;
                       } else if (value.length < 6) {
-                        return "Şifreniz 6 hanenin altında olamaz";
+                        return context.loc.passwordLength;
                       }
                       return null;
                     },
@@ -96,7 +96,7 @@ class _BodyWidgetState extends State<BodyWidget> {
                   TextFormField(
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return "Bu alan boş kalamaz";
+                        return context.loc.emptyField;
                       }
                       return null;
                     },
@@ -115,7 +115,7 @@ class _BodyWidgetState extends State<BodyWidget> {
                   TextFormField(
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return "Bu alan boş kalamaz";
+                        return context.loc.emptyField;
                       }
                       return null;
                     },

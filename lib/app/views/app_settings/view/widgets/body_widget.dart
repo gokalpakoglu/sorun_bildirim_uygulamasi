@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sorun_bildirim_uygulamasi/app/views/app_settings/app_themes.dart';
 import 'package:sorun_bildirim_uygulamasi/app/views/app_settings/bloc/app_settings_bloc.dart';
 import 'package:sorun_bildirim_uygulamasi/core/extension/context_extension.dart';
 
@@ -16,15 +15,32 @@ class _BodyWidgetState extends State<BodyWidget> {
   Widget build(BuildContext context) {
     return BlocBuilder<AppSettingsBloc, AppSettingsState>(
         builder: (context, state) {
-      List<AppTheme> themes = [AppTheme.lightTheme, AppTheme.darkTheme];
-      List<bool> isSelected =
+      List<AppTheme> themes = [
+        AppTheme.lightTheme,
+        AppTheme.darkTheme,
+      ];
+      List<bool> isSelectedTheme =
           themes.map((theme) => state.theme == theme).toList();
 
-      List<Locale> languages = [
-        const Locale('en', 'US'),
-        const Locale('tr', 'TR')
+      List<Languages> languages = [
+        Languages.english,
+        Languages.turkish,
       ];
+      Locale getLocaleFromLanguage(Languages language) {
+        switch (language) {
+          case Languages.english:
+            return const Locale('en', 'US');
+          case Languages.turkish:
+            return const Locale('tr', 'TR');
+          // Diğer diller için gerekli durumları ekleyin
+          default:
+            return const Locale(
+                'en', 'US'); // Varsayılan olarak İngilizce döndürülebilir
+        }
+      }
+
       List<bool> isSelectedLang =
+          // ignore: unrelated_type_equality_checks
           languages.map((lang) => state.locale == lang).toList();
 
       return Padding(
@@ -37,11 +53,11 @@ class _BodyWidgetState extends State<BodyWidget> {
               style: Theme.of(context).textTheme.titleLarge,
             ),
             ToggleButtons(
-              isSelected: isSelected,
+              isSelected: isSelectedTheme,
               onPressed: (int newIndex) {
                 context
                     .read<AppSettingsBloc>()
-                    .add(SelectTheme(appTheme: themes[newIndex]));
+                    .add(ThemeChanged(appTheme: themes[newIndex]));
               },
               children: themes.map((theme) {
                 IconData icon = theme == AppTheme.lightTheme
@@ -61,12 +77,11 @@ class _BodyWidgetState extends State<BodyWidget> {
             ToggleButtons(
               isSelected: isSelectedLang,
               onPressed: (int newIndex) {
-                context
-                    .read<AppSettingsBloc>()
-                    .add(SelectLanguage(locale: languages[newIndex]));
+                context.read<AppSettingsBloc>().add(LanguageChanged(
+                    locale: getLocaleFromLanguage(languages[newIndex])));
               },
               children: languages.map((lang) {
-                String label = lang.languageCode == 'en'
+                String label = lang == Languages.english
                     ? context.loc.english
                     : context.loc.turkish;
                 return Padding(

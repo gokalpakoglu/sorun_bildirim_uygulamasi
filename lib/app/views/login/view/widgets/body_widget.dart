@@ -18,125 +18,123 @@ class _BodyWidgetState extends State<BodyWidget> {
   final user = FirebaseAuth.instance;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: BlocListener<LoginBloc, LoginState>(
-        listenWhen: (previous, current) =>
-            previous.appStatus != current.appStatus,
-        listener: (context, state) {
-          var formStatus = state.appStatus;
-          if (formStatus is SubmissionSuccess) {
-            context.router
-                .pushAndPopUntil(const MainRoute(), predicate: (_) => false);
-          } else if (formStatus is SubmissionFailed) {
-            _showErrorDialog("Hata", state.message, context);
-          }
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: BlocBuilder<LoginBloc, LoginState>(
-            builder: (context, state) {
-              return Form(
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 10),
-                    Text(context.loc.emailAddress),
-                    const SizedBox(height: 5),
-                    TextFormField(
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Bu alan boş kalamaz";
-                        } else if (!value.contains("@")) {
-                          return "Lütfen geçerli bir e-posta adresi girin";
-                        }
-                        return null;
-                      },
-                      onChanged: (value) {
-                        BlocProvider.of<LoginBloc>(context)
-                            .add(LoginEmailChanged(email: value));
-                        debugPrint(value);
-                      },
-                      decoration: InputDecoration(
-                          border: const OutlineInputBorder(),
-                          hintText: context.loc.enterYourEmail,
-                          errorText: state.emailErrorMsg),
+    return BlocListener<LoginBloc, LoginState>(
+      listenWhen: (previous, current) =>
+          previous.appStatus != current.appStatus,
+      listener: (context, state) {
+        var formStatus = state.appStatus;
+        if (formStatus is SubmissionSuccess) {
+          context.router
+              .pushAndPopUntil(const MainRoute(), predicate: (_) => false);
+        } else if (formStatus is SubmissionFailed) {
+          _showErrorDialog(context.loc.errorTitle, state.message, context);
+        }
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: BlocBuilder<LoginBloc, LoginState>(
+          builder: (context, state) {
+            return Form(
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 10),
+                  Text(context.loc.emailAddress),
+                  const SizedBox(height: 5),
+                  TextFormField(
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return context.loc.emptyField;
+                      } else if (!value.contains("@")) {
+                        return context.loc.validEmail;
+                      }
+                      return null;
+                    },
+                    onChanged: (value) {
+                      BlocProvider.of<LoginBloc>(context)
+                          .add(LoginEmailChanged(email: value));
+                      debugPrint(value);
+                    },
+                    decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        hintText: context.loc.enterYourEmail,
+                        errorText: state.emailErrorMsg),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(context.loc.password),
+                  TextFormField(
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return context.loc.emptyField;
+                      } else if (value.length < 6) {
+                        return context.loc.passwordLength;
+                      }
+                      return null;
+                    },
+                    obscureText: true,
+                    onChanged: (value) {
+                      BlocProvider.of<LoginBloc>(context)
+                          .add(LoginPasswordChanged(password: value));
+                    },
+                    decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        hintText: context.loc.enterYourPassword,
+                        errorText: state.passwordErrorMsg),
+                  ),
+                  const SizedBox(height: 5),
+                  GestureDetector(
+                    onTap: () {},
+                    child: Text(
+                      context.loc.forgotPassword,
+                      style: const TextStyle(
+                        color: Colors.deepPurple,
+                      ),
                     ),
-                    const SizedBox(height: 5),
-                    Text(context.loc.password),
-                    TextFormField(
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Bu alan boş kalamaz";
-                        } else if (value.length < 6) {
-                          return "Şifreniz 6 hanenin altında olamaz";
-                        }
-                        return null;
-                      },
-                      obscureText: true,
-                      onChanged: (value) {
-                        BlocProvider.of<LoginBloc>(context)
-                            .add(LoginPasswordChanged(password: value));
-                      },
-                      decoration: InputDecoration(
-                          border: const OutlineInputBorder(),
-                          hintText: context.loc.enterYourPassword,
-                          errorText: state.passwordErrorMsg),
-                    ),
-                    const SizedBox(height: 5),
-                    GestureDetector(
-                      onTap: () {},
+                  ),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    height: 50,
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: (state.isValidEmail && state.isValidPassword)
+                          ? () async {
+                              BlocProvider.of<LoginBloc>(context)
+                                  .add(LoginSubmitted());
+                            }
+                          : null,
                       child: Text(
-                        context.loc.forgotPassword,
+                        (state.appStatus is SubmissionLoading)
+                            ? '.......'
+                            : context.loc.login,
                         style: const TextStyle(
-                          color: Colors.deepPurple,
+                          fontSize: 20,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 10),
-                    SizedBox(
-                      height: 50,
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: (state.isValidEmail && state.isValidPassword)
-                            ? () async {
-                                BlocProvider.of<LoginBloc>(context)
-                                    .add(LoginSubmitted());
-                              }
-                            : null,
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(context.loc.haveAccounts),
+                      GestureDetector(
+                        onTap: () {
+                          context.router.push(const RegisterRoute());
+                        },
                         child: Text(
-                          (state.appStatus is SubmissionLoading)
-                              ? '.......'
-                              : context.loc.login,
+                          context.loc.register,
                           style: const TextStyle(
-                            fontSize: 20,
+                            color: Colors.deepPurple,
                           ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(context.loc.haveAccounts),
-                        GestureDetector(
-                          onTap: () {
-                            context.router.push(const RegisterRoute());
-                          },
-                          child: Text(
-                            context.loc.register,
-                            style: const TextStyle(
-                              color: Colors.deepPurple,
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
+                      )
+                    ],
+                  ),
+                ],
+              ),
+            );
+          },
         ),
       ),
     );
@@ -154,7 +152,7 @@ class _BodyWidgetState extends State<BodyWidget> {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: const Text('OK'),
+              child: Text(context.loc.ok),
             ),
           ],
         );

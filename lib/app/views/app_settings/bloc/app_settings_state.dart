@@ -2,9 +2,15 @@ part of 'app_settings_bloc.dart';
 
 enum Languages { turkish, english }
 
+enum AppTheme { lightTheme, darkTheme, systemTheme }
+
 class AppSettingsState extends Equatable {
-  const AppSettingsState(
-      {this.theme, this.languages, this.locale, this.themeData});
+  const AppSettingsState({
+    this.theme,
+    this.languages,
+    this.locale,
+    this.themeData,
+  });
 
   final ThemeData? themeData;
   final Locale? locale;
@@ -21,7 +27,7 @@ class AppSettingsState extends Equatable {
       themeData: themeData ?? this.themeData,
       locale: locale ?? this.locale,
       languages: languages ?? this.languages,
-      theme: theme ?? theme,
+      theme: theme ?? this.theme,
     );
   }
 

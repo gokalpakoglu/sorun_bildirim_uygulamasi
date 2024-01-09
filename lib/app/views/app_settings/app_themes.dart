@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sorun_bildirim_uygulamasi/app/views/app_settings/bloc/app_settings_bloc.dart';
 
 class AppThemes {
   static final appThemeData = {
@@ -25,4 +26,4 @@ class AppThemes {
   };
 }
 
-enum AppTheme { lightTheme, darkTheme, systemTheme }
+

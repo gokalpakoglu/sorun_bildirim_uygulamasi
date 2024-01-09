@@ -29,8 +29,8 @@ class ProfileView extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
-                      "Profil bilgilerinizi görebilmeniz için ilk olarak giriş yapmanız gerekmektedir.",
+                    Text(
+                      context.loc.firstLogin,
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 20),
@@ -38,7 +38,7 @@ class ProfileView extends StatelessWidget {
                       onPressed: () => context.router.pushAndPopUntil(
                           const LoginRoute(),
                           predicate: (_) => false),
-                      child: const Text("Giriş yap"),
+                      child: Text(context.loc.login),
                     ),
                   ],
                 ),

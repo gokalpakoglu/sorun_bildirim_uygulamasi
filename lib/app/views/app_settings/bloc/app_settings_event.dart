@@ -7,19 +7,25 @@ abstract class AppSettingsEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class SelectLanguage extends AppSettingsEvent {
-  const SelectLanguage({this.languages, this.locale});
+class LanguageChanged extends AppSettingsEvent {
+  const LanguageChanged({this.languages, this.locale});
   final Locale? locale;
   final Languages? languages;
   @override
   List<Object> get props => [locale!, languages!];
 }
 
-class SelectTheme extends AppSettingsEvent {
+class ThemeChanged extends AppSettingsEvent {
   final AppTheme? appTheme;
 
-  const SelectTheme({this.appTheme});
+  const ThemeChanged({this.appTheme});
 
   @override
   List<Object> get props => [appTheme!];
+}
+
+class InitialAppSettings extends AppSettingsEvent {
+  const InitialAppSettings();
+  @override
+  List<Object> get props => [];
 }

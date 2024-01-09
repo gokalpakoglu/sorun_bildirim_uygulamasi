@@ -23,9 +23,9 @@ class _BodyWidgetState extends State<BodyWidget> {
       listener: (context, state) {
         var formStatus = state.appStatus;
         if (formStatus is FormSubmitting) {
-          _showSuccessDialog("Başarılı", state.message, context);
+          _showSuccessDialog(context.loc.successTitle, state.message, context);
         } else if (formStatus is SubmissionFailed) {
-          _showErrorDialog("Hata", state.message, context);
+          _showErrorDialog(context.loc.errorTitle, state.message, context);
         }
       },
       buildWhen: (previous, current) {
@@ -49,7 +49,7 @@ class _BodyWidgetState extends State<BodyWidget> {
                         initialValue: state.user?.name,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return "Bu alan boş kalamaz";
+                            return context.loc.emptyField;
                           }
                           return null;
                         },
@@ -68,7 +68,7 @@ class _BodyWidgetState extends State<BodyWidget> {
                         initialValue: state.user?.surname,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return "Bu alan boş kalamaz";
+                            return context.loc.emptyField;
                           }
                           return null;
                         },
@@ -144,7 +144,7 @@ void _showSuccessDialog(String title, String message, BuildContext context) {
             onPressed: () {
               Navigator.pop(context);
             },
-            child: const Text('OK'),
+            child: Text(context.loc.ok),
           ),
         ],
       );
@@ -164,7 +164,7 @@ void _showErrorDialog(String title, String message, BuildContext context) {
             onPressed: () {
               Navigator.pop(context);
             },
-            child: const Text('OK'),
+            child: Text(context.loc.ok),
           ),
         ],
       );

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sorun_bildirim_uygulamasi/app/views/home/bloc/home_bloc.dart';
 import 'package:sorun_bildirim_uygulamasi/core/blocs/bloc_status.dart';
+import 'package:sorun_bildirim_uygulamasi/core/extension/context_extension.dart';
 import 'package:sorun_bildirim_uygulamasi/core/init/navigation/app_router.gr.dart';
 
 @RoutePage()
@@ -32,7 +33,8 @@ class _AddProblemViewState extends State<AddProblemView> {
                   context.router.pushAndPopUntil(const MainRoute(),
                       predicate: (_) => false);
                 } else if (formStatus is SubmissionFailed) {
-                  _showErrorDialog("Hata", state.message, context);
+                  _showErrorDialog(
+                      context.loc.errorTitle, state.message, context);
                 }
               },
               child: Padding(
@@ -54,7 +56,7 @@ class _AddProblemViewState extends State<AddProblemView> {
                           );
                         }
                       },
-                      child: const Text('Take Photo'),
+                      child: Text(context.loc.takePhoto),
                     ),
                     ElevatedButton(
                       onPressed: () async {
@@ -68,12 +70,12 @@ class _AddProblemViewState extends State<AddProblemView> {
                           );
                         }
                       },
-                      child: const Text('Select Photos'),
+                      child: Text(context.loc.selectPhotos),
                     ),
                     const SizedBox(height: 16.0),
                     TextFormField(
                       decoration: InputDecoration(
-                        hintText: 'Title',
+                        hintText: context.loc.title,
                         errorText: state.titleErrorMsg,
                         border: const OutlineInputBorder(),
                       ),
@@ -86,7 +88,7 @@ class _AddProblemViewState extends State<AddProblemView> {
                     const SizedBox(height: 16.0),
                     TextFormField(
                       decoration: InputDecoration(
-                        hintText: 'Description',
+                        hintText: context.loc.description,
                         errorText: state.descriptionErrorMsg,
                         border: const OutlineInputBorder(),
                       ),
@@ -102,7 +104,7 @@ class _AddProblemViewState extends State<AddProblemView> {
                       onPressed: () {
                         context.router.push(const AddProblemLocationRoute());
                       },
-                      child: const Text('Select Location on Map'),
+                      child: Text(context.loc.selectOnMap),
                     ),
                     const SizedBox(height: 16.0),
                     ElevatedButton(
@@ -121,7 +123,7 @@ class _AddProblemViewState extends State<AddProblemView> {
                       child: Text(
                         (state.appStatus is SubmissionLoading)
                             ? "......"
-                            : "Submit",
+                            : context.loc.submit,
                         style: const TextStyle(
                           fontSize: 20,
                         ),
@@ -150,7 +152,7 @@ void _showErrorDialog(String title, String message, BuildContext context) {
             onPressed: () {
               Navigator.pop(context);
             },
-            child: const Text('OK'),
+            child:  Text(context.loc.ok),
           ),
         ],
       );

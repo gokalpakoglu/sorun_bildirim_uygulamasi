@@ -52,7 +52,7 @@ class _BodyWidgetState extends State<BodyWidget> {
                         onPressed: () {
                           context.router.push(const AddProblemRoute());
                         },
-                        label: const Text('Sorun Bildir'),
+                        label: Text(context.loc.reportProblem),
                         icon: const Icon(Icons.report_problem),
                       )
                     : const SizedBox.shrink(),
@@ -110,10 +110,11 @@ class _BodyWidgetState extends State<BodyWidget> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Expanded(
+                          Expanded(
                             child: Text(
-                              "Problem title",
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              context.loc.title,
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold),
                             ),
                           ),
                           Expanded(
@@ -127,10 +128,11 @@ class _BodyWidgetState extends State<BodyWidget> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Expanded(
+                          Expanded(
                             child: Text(
-                              "Problem description",
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              context.loc.description,
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold),
                             ),
                           ),
                           Expanded(
@@ -141,9 +143,9 @@ class _BodyWidgetState extends State<BodyWidget> {
                         ],
                       ),
                       const SizedBox(height: 16),
-                      const Text(
-                        "Problem Pictures:",
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                      Text(
+                        context.loc.problemPictures,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
                       Center(
