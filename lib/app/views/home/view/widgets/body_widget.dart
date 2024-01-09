@@ -64,126 +64,113 @@ class _BodyWidgetState extends State<BodyWidget> {
   }
 
   Set<Marker> getMarkers(
-      List<Map<String, dynamic>> problemsData, BuildContext context) {
+    List<Map<String, dynamic>> problemsData,
+    BuildContext context,
+  ) {
     return Set<Marker>.of(problemsData.map((problem) {
+      final latLng = LatLng(problem['lat'], problem['lng']);
       return Marker(
         markerId: MarkerId("${problem['lat']}${problem['lng']}"),
-        position: LatLng(problem['lat'], problem['lng']),
-        infoWindow: InfoWindow(
-          title: problem['title'],
-          snippet: problem['description'],
-        ),
+        position: latLng,
         onTap: () {
-          showModalBottomSheet<void>(
-            context: context,
-            builder: (BuildContext context) {
-              return SingleChildScrollView(
-                child: Padding(
-                  padding: context.verticalPaddingLow +
-                      context.horizontalPaddingMedium,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: Padding(
-                              padding: context.horizontalPaddingHigh,
-                              child: const Divider(
-                                thickness: 3,
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 0,
-                            child: InkWell(
-                              onTap: () {
-                                Navigator.pop(context);
-                              },
-                              child: const Icon(Icons.close),
-                            ),
-                          ),
-                        ],
+          if (groupProblemsByLocation(problemsData)[latLng]!.length > 1) {
+            showModalBottomSheet<void>(
+              context: context,
+              builder: (BuildContext context) {
+                return ListView.builder(
+                  itemCount:
+                      groupProblemsByLocation(problemsData)[latLng]!.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    final currentProblem =
+                        groupProblemsByLocation(problemsData)[latLng]![index];
+                    return Card(
+                      child: ListTile(
+                        title: Text(currentProblem['title'] ?? ''),
+                        subtitle: Text(currentProblem['description'] ?? ''),
+                        onTap: () {
+                          Navigator.pop(context);
+                          _showProblemDetailsDialog(context, currentProblem);
+                        },
                       ),
-                      const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              context.loc.title,
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          Expanded(
-                            child: Text(problem["title"],
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold)),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              context.loc.description,
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          Expanded(
-                            child: Text(problem["description"],
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold)),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        context.loc.problemPictures,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 8),
-                      Center(
-                        child: Column(
-                          children: List.generate(
-                            problem['imageUrls'].length,
-                            (index) => GestureDetector(
-                              onTap: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (_) => Dialog(
-                                    child: Image.network(
-                                      problem['imageUrls'][index],
-                                      fit: BoxFit.contain,
-                                    ),
-                                  ),
-                                );
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.all(4.0),
-                                child: Image.network(
-                                  problem['imageUrls'][index],
-                                  height: 250,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          );
+                    );
+                  },
+                );
+              },
+            );
+          } else {
+            _showProblemDetailsDialog(context, problem);
+          }
         },
       );
     }));
+  }
+
+  void _showProblemDetailsDialog(
+      BuildContext context, Map<String, dynamic> problem) {
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                Text(
+                  problem['title'],
+                ),
+                const SizedBox(
+                  height: 12,
+                ),
+                Text(problem['description']),
+                const SizedBox(height: 12),
+                Center(
+                  child: Column(
+                    children: List.generate(
+                      problem['imageUrls'].length,
+                      (index) => GestureDetector(
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (_) => Dialog(
+                              child: Image.network(
+                                problem['imageUrls'][index],
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: Image.network(
+                            problem['imageUrls'][index],
+                            height: 250,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Map<LatLng, List<Map<String, dynamic>>> groupProblemsByLocation(
+    List<Map<String, dynamic>> problemsData,
+  ) {
+    final groupedProblems = <LatLng, List<Map<String, dynamic>>>{};
+    for (var problem in problemsData) {
+      final latLng = LatLng(problem['lat'], problem['lng']);
+      if (groupedProblems.containsKey(latLng)) {
+        groupedProblems[latLng]!.add(problem);
+      } else {
+        groupedProblems[latLng] = [problem];
+      }
+    }
+    return groupedProblems;
   }
 }
