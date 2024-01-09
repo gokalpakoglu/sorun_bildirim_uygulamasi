@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sorun_bildirim_uygulamasi/app/views/register/bloc/register_bloc.dart';
 import 'package:sorun_bildirim_uygulamasi/core/blocs/bloc_status.dart';
+import 'package:sorun_bildirim_uygulamasi/core/common/custom_elevated_button.dart';
+import 'package:sorun_bildirim_uygulamasi/core/common/custom_text_form_field.dart';
 import 'package:sorun_bildirim_uygulamasi/core/extension/context_extension.dart';
 import 'package:sorun_bildirim_uygulamasi/core/init/navigation/app_router.gr.dart';
 
@@ -52,7 +54,10 @@ class _BodyWidgetState extends State<BodyWidget> {
                   const SizedBox(height: 10),
                   Text(context.loc.emailAddress),
                   const SizedBox(height: 5),
-                  TextFormField(
+                  CustomTextFormField(
+                    maxLines: 1,
+                    enabled: true,
+                    obscureText: false,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return context.loc.emptyField;
@@ -65,14 +70,13 @@ class _BodyWidgetState extends State<BodyWidget> {
                       BlocProvider.of<RegisterBloc>(context)
                           .add(RegisterEmailChanged(email: value));
                     },
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      hintText: context.loc.enterYourEmail,
-                    ),
+                    hintText: context.loc.enterYourEmail,
                   ),
                   const SizedBox(height: 5),
                   Text(context.loc.password),
-                  TextFormField(
+                  CustomTextFormField(
+                    maxLines: 1,
+                    enabled: true,
                     obscureText: true,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -86,14 +90,14 @@ class _BodyWidgetState extends State<BodyWidget> {
                       BlocProvider.of<RegisterBloc>(context)
                           .add(RegisterPasswordChanged(password: value));
                     },
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      hintText: context.loc.enterYourPassword,
-                    ),
+                    hintText: context.loc.enterYourPassword,
                   ),
                   const SizedBox(height: 5),
                   Text(context.loc.name),
-                  TextFormField(
+                  CustomTextFormField(
+                    maxLines: 1,
+                    enabled: true,
+                    obscureText: false,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return context.loc.emptyField;
@@ -104,15 +108,14 @@ class _BodyWidgetState extends State<BodyWidget> {
                       BlocProvider.of<RegisterBloc>(context)
                           .add(RegisterNameChanged(name: value));
                     },
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      hintText: context.loc.enteryourName,
-                    ),
-                    obscureText: false,
+                    hintText: context.loc.enteryourName,
                   ),
                   const SizedBox(height: 5),
                   Text(context.loc.surname),
-                  TextFormField(
+                  CustomTextFormField(
+                    maxLines: 1,
+                    enabled: true,
+                    obscureText: false,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return context.loc.emptyField;
@@ -123,24 +126,24 @@ class _BodyWidgetState extends State<BodyWidget> {
                       BlocProvider.of<RegisterBloc>(context)
                           .add(RegisterSurnameChanged(surname: value));
                     },
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      hintText: context.loc.enterYourSurname,
-                    ),
-                    obscureText: false,
+                    hintText: context.loc.enterYourSurname,
                   ),
                   const SizedBox(height: 5),
                   Text(context.loc.location),
-                  ElevatedButton(
-                      onPressed: () {
-                        context.router.push(const GetCurrentLocationRoute());
-                      },
-                      child: Text(context.loc.getCurrentLocation)),
+                  CustomElevatedButton(
+                    text: context.loc.getCurrentLocation,
+                    onPressed: () {
+                      context.router.push(const GetCurrentLocationRoute());
+                    },
+                  ),
                   const SizedBox(height: 10),
                   SizedBox(
                     height: 50,
                     width: double.infinity,
-                    child: ElevatedButton(
+                    child: CustomElevatedButton(
+                      text: (state.appStatus is SubmissionLoading)
+                          ? "......"
+                          : context.loc.signup,
                       onPressed: (state.isValidEmail &&
                               state.isValidPassword &&
                               state.isValidName &&
@@ -154,14 +157,6 @@ class _BodyWidgetState extends State<BodyWidget> {
                               } catch (_) {}
                             }
                           : null,
-                      child: Text(
-                        (state.appStatus is SubmissionLoading)
-                            ? "......"
-                            : context.loc.signup,
-                        style: const TextStyle(
-                          fontSize: 20,
-                        ),
-                      ),
                     ),
                   ),
                 ],

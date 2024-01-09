@@ -1,7 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:sorun_bildirim_uygulamasi/core/blocs/bloc_status.dart';
 import 'package:sorun_bildirim_uygulamasi/core/init/service/firebase_service.dart';
 
@@ -89,7 +88,6 @@ String? validatePassword({String? password}) {
   if (password?.isEmpty ?? false) {
     return 'Password cannot be empty';
   } else if ((password?.length ?? 0) < 6) {
-    debugPrint(password?.length.toString());
     return 'Password must be at least 6 characters';
   } else {
     return null;

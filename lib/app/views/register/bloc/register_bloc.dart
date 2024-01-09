@@ -63,7 +63,6 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
           lng: state.lng,
           password: state.password,
         );
-        debugPrint(user.toString());
 
         await authSerivce.registerUser(user);
         emit(state.copyWith(
@@ -156,7 +155,6 @@ String? validatePassword({String? password}) {
   if (password?.isEmpty ?? false) {
     return 'Password cannot be empty';
   } else if ((password?.length ?? 0) < 6) {
-    debugPrint(password?.length.toString());
     return 'Password must be at least 6 characters';
   } else {
     return null;

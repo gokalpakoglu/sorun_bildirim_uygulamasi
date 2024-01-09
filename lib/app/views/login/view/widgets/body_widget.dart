@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sorun_bildirim_uygulamasi/app/views/login/bloc/login_bloc.dart';
 import 'package:sorun_bildirim_uygulamasi/core/blocs/bloc_status.dart';
+import 'package:sorun_bildirim_uygulamasi/core/common/custom_elevated_button.dart';
+import 'package:sorun_bildirim_uygulamasi/core/common/custom_text_form_field.dart';
 import 'package:sorun_bildirim_uygulamasi/core/extension/context_extension.dart';
 import 'package:sorun_bildirim_uygulamasi/core/init/navigation/app_router.gr.dart';
 
@@ -42,7 +44,10 @@ class _BodyWidgetState extends State<BodyWidget> {
                   const SizedBox(height: 10),
                   Text(context.loc.emailAddress),
                   const SizedBox(height: 5),
-                  TextFormField(
+                  CustomTextFormField(
+                    maxLines: 1,
+                    enabled: true,
+                    obscureText: false,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return context.loc.emptyField;
@@ -54,16 +59,14 @@ class _BodyWidgetState extends State<BodyWidget> {
                     onChanged: (value) {
                       BlocProvider.of<LoginBloc>(context)
                           .add(LoginEmailChanged(email: value));
-                      debugPrint(value);
                     },
-                    decoration: InputDecoration(
-                        border: const OutlineInputBorder(),
-                        hintText: context.loc.enterYourEmail,
-                        errorText: state.emailErrorMsg),
+                    hintText: context.loc.enterYourEmail,
                   ),
                   const SizedBox(height: 5),
                   Text(context.loc.password),
-                  TextFormField(
+                  CustomTextFormField(
+                    maxLines: 1,
+                    enabled: true,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return context.loc.emptyField;
@@ -77,10 +80,7 @@ class _BodyWidgetState extends State<BodyWidget> {
                       BlocProvider.of<LoginBloc>(context)
                           .add(LoginPasswordChanged(password: value));
                     },
-                    decoration: InputDecoration(
-                        border: const OutlineInputBorder(),
-                        hintText: context.loc.enterYourPassword,
-                        errorText: state.passwordErrorMsg),
+                    hintText: context.loc.enterYourPassword,
                   ),
                   const SizedBox(height: 5),
                   GestureDetector(
@@ -96,21 +96,16 @@ class _BodyWidgetState extends State<BodyWidget> {
                   SizedBox(
                     height: 50,
                     width: double.infinity,
-                    child: ElevatedButton(
+                    child: CustomElevatedButton(
+                      text: (state.appStatus is SubmissionLoading)
+                          ? '.......'
+                          : context.loc.login,
                       onPressed: (state.isValidEmail && state.isValidPassword)
                           ? () async {
                               BlocProvider.of<LoginBloc>(context)
                                   .add(LoginSubmitted());
                             }
                           : null,
-                      child: Text(
-                        (state.appStatus is SubmissionLoading)
-                            ? '.......'
-                            : context.loc.login,
-                        style: const TextStyle(
-                          fontSize: 20,
-                        ),
-                      ),
                     ),
                   ),
                   const SizedBox(height: 20),

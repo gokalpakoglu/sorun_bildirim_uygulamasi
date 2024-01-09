@@ -79,8 +79,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           lng: state.lng ?? state.user?.lng,
         );
 
-        debugPrint(user.toString());
-
         await auth.updateUser(user);
         emit(state.copyWith(
             appStatus: FormSubmitting(),
@@ -89,7 +87,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
         // emit(state);
       } catch (e) {
-        debugPrint('Hata: $e');
         emit(state.copyWith(
             appStatus: SubmissionFailed(e), message: e.toString()));
       }

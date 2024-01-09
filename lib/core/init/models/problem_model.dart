@@ -12,6 +12,13 @@ class ProblemModel {
     this.lng,
     this.imageUrls,
   });
+  Map<String, dynamic> toJson() => {
+        'title': title,
+        'description': description,
+        'lat': lat,
+        'lng': lng,
+        'imageUrls': imageUrls
+      };
   @override
   String toString() {
     return "Title: $title\nDescription: $description\nImageUrl:$imageUrls\nLat:$lat\nLng:$lng";

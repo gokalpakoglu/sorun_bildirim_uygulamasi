@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sorun_bildirim_uygulamasi/app/views/profile/bloc/profile_bloc.dart';
 import 'package:sorun_bildirim_uygulamasi/core/blocs/bloc_status.dart';
+import 'package:sorun_bildirim_uygulamasi/core/common/custom_elevated_button.dart';
+import 'package:sorun_bildirim_uygulamasi/core/common/custom_text_form_field.dart';
 import 'package:sorun_bildirim_uygulamasi/core/extension/context_extension.dart';
 import 'package:sorun_bildirim_uygulamasi/core/init/navigation/app_router.gr.dart';
 
@@ -45,7 +47,9 @@ class _BodyWidgetState extends State<BodyWidget> {
                     children: [
                       const SizedBox(height: 10),
                       Text(context.loc.name),
-                      TextFormField(
+                      CustomTextFormField(
+                        maxLines: 1,
+                        enabled: true,
                         initialValue: state.user?.name,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -57,14 +61,13 @@ class _BodyWidgetState extends State<BodyWidget> {
                           BlocProvider.of<ProfileBloc>(context)
                               .add(ProfileNameChanged(name: value));
                         },
-                        decoration: InputDecoration(
-                            border: const OutlineInputBorder(),
-                            errorText: state.nameErrorMsg),
                         obscureText: false,
                       ),
                       const SizedBox(height: 5),
                       Text(context.loc.surname),
-                      TextFormField(
+                      CustomTextFormField(
+                        maxLines: 1,
+                        enabled: true,
                         initialValue: state.user?.surname,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -76,50 +79,41 @@ class _BodyWidgetState extends State<BodyWidget> {
                           BlocProvider.of<ProfileBloc>(context)
                               .add(ProfileSurnameChanged(surname: value));
                         },
-                        decoration: InputDecoration(
-                            border: const OutlineInputBorder(),
-                            errorText: state.surnameErrorMsg),
                         obscureText: false,
                       ),
                       const SizedBox(height: 5),
                       Text(context.loc.location),
-                      TextFormField(
+                      CustomTextFormField(
+                        maxLines: 1,
                         onChanged: (value) {
                           BlocProvider.of<ProfileBloc>(context)
                               .add(ProfileLatLngChanged());
                         },
-                        decoration: InputDecoration(
-                          enabled: false,
-                          border: const OutlineInputBorder(),
-                          labelText:
-                              "${state.user?.lat.toString()},${state.user?.lng.toString()}",
-                        ),
                         obscureText: false,
+                        enabled: false,
+                        labelText:
+                            "${state.user?.lat.toString()},${state.user?.lng.toString()}",
                       ),
                       const SizedBox(height: 5),
-                      ElevatedButton(
-                          onPressed: () {
-                            context.router
-                                .push(const UpdateCurrentLocationRoute());
-                          },
-                          child: Text(context.loc.getCurrentLocation)),
+                      CustomElevatedButton(
+                        text: context.loc.getCurrentLocation,
+                        onPressed: () {
+                          context.router
+                              .push(const UpdateCurrentLocationRoute());
+                        },
+                      ),
                       const SizedBox(height: 10),
                       SizedBox(
                         height: 50,
                         width: double.infinity,
-                        child: ElevatedButton(
+                        child: CustomElevatedButton(
                           onPressed: () {
                             BlocProvider.of<ProfileBloc>(context)
                                 .add(ProfileSubmitted());
                           },
-                          child: Text(
-                            state.appStatus is SubmissionLoading
-                                ? '.......'
-                                : context.loc.update,
-                            style: const TextStyle(
-                              fontSize: 20,
-                            ),
-                          ),
+                          text: state.appStatus is SubmissionLoading
+                              ? '.......'
+                              : context.loc.update,
                         ),
                       ),
                     ],

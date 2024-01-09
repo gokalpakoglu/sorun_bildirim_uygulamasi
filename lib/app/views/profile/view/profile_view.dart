@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sorun_bildirim_uygulamasi/app/views/profile/view/widgets/body_widget.dart';
 import 'package:sorun_bildirim_uygulamasi/core/common/app_bar_widget.dart';
+import 'package:sorun_bildirim_uygulamasi/core/common/custom_elevated_button.dart';
 import 'package:sorun_bildirim_uygulamasi/core/extension/context_extension.dart';
 import 'package:sorun_bildirim_uygulamasi/core/init/navigation/app_router.gr.dart';
 
@@ -34,11 +35,11 @@ class ProfileView extends StatelessWidget {
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 20),
-                    ElevatedButton(
+                    CustomElevatedButton(
+                      text: context.loc.login,
                       onPressed: () => context.router.pushAndPopUntil(
                           const LoginRoute(),
                           predicate: (_) => false),
-                      child: Text(context.loc.login),
                     ),
                   ],
                 ),

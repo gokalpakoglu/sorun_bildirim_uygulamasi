@@ -37,8 +37,6 @@ class _GetCurrentLocationViewState extends State<GetCurrentLocationView> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
-          //
-
           BlocProvider.of<RegisterBloc>(context).add(RegisterLatLngChanged());
         },
         label: Text(context.loc.location),
