@@ -27,23 +27,25 @@ class AppSettingsBloc extends Bloc<AppSettingsEvent, AppSettingsState> {
         ) {
     on<LanguageChanged>(
       (event, emit) async {
-        emit(state.copyWith(locale: event.locale));
-        emit(state.copyWith(languages: event.languages));
-
         Map<String, int> cache = {
           "language": event.languages!.index,
         };
         await CacheManager<Map<String, int>>()
             .writeData(key: CacheManagerEnum.language.name, value: cache);
-        print("${CacheManagerEnum.language.name} is written to the cache.");
+        emit(state.copyWith(locale: event.locale, languages: event.languages));
       },
     );
 
     on<ThemeChanged>(
       (event, emit) async {
-        emit(state.copyWith(theme: event.appTheme));
+        Map<String, int> cache = {
+          "theme": event.appTheme!.index,
+        };
+        await CacheManager<Map<String, int>>()
+            .writeData(key: CacheManagerEnum.theme.name, value: cache);
         emit(
           state.copyWith(
+            theme: event.appTheme,
             themeData: event.appTheme != AppTheme.systemTheme
                 ? AppThemes.appThemeData[event.appTheme]
                 // ignore: deprecated_member_use
@@ -53,14 +55,7 @@ class AppSettingsBloc extends Bloc<AppSettingsEvent, AppSettingsState> {
                     : AppThemes.appThemeData[AppTheme.lightTheme],
           ),
         );
-        Map<String, int> cache = {
-          "theme": event.appTheme!.index,
-        };
-        await CacheManager<Map<String, int>>()
-            .writeData(key: CacheManagerEnum.theme.name, value: cache);
-        print(
-          "${CacheManagerEnum.theme.name} is written to the cache with index ${cache["theme"]}",
-        );
+        debugPrint(cache.toString());
       },
     );
     on<InitialAppSettings>((event, emit) async {
@@ -73,6 +68,8 @@ class AppSettingsBloc extends Bloc<AppSettingsEvent, AppSettingsState> {
         final themeValue = cachedThemeData['theme'];
         if (themeValue is int) {
           emit(state.copyWith(
+              themeData: AppTheme
+                  .values[themeValue % AppTheme.values.length].fromTheme,
               theme: AppTheme.values[themeValue % AppTheme.values.length]));
         }
       }
@@ -81,49 +78,12 @@ class AppSettingsBloc extends Bloc<AppSettingsEvent, AppSettingsState> {
         if (languageValue is int) {
           emit(state.copyWith(
             locale: Languages
-                    .values[languageValue % Languages.values.length.toInt()]
-                as Locale,
+                .values[languageValue % Languages.values.length.toInt()]
+                .localeFromLanguage,
           ));
         }
       }
-      print(
-        '${CacheManagerEnum.values} data read from the cache:\n'
-        'Language: ${state.locale}\n'
-        'Theme: ${state.theme}',
-      );
-      // final cachedTheme = await _getThemeFromCache();
-      // final cachedLanguage = await _getLanguageFromCache();
-      // emit(state.copyWith(
-      //   //languages: Languages.values[cachedLanguage!],
-      //   theme: AppTheme.values[cachedTheme!],
-      //   themeData: themeData,
-      // ));
+      debugPrint(cachedThemeData.toString());
     });
   }
-
-  // Future<int?> _getThemeFromCache() async {
-  //   final cachedData = CacheManager<Map<String, dynamic>>()
-  //       .readData(key: CacheManagerEnum.theme.name);
-
-  //   if (cachedData != null && cachedData.containsKey('theme')) {
-  //     final themeValue = cachedData['theme'];
-  //     if (themeValue is int) {
-  //       return themeValue;
-  //     }
-  //   }
-  //   return null;
-  // }
-
-  // Future<int?> _getLanguageFromCache() async {
-  //   final cachedData = CacheManager<Map<String, dynamic>>()
-  //       .readData(key: CacheManagerEnum.language.name);
-
-  //   if (cachedData != null && cachedData.containsKey('language')) {
-  //     final languageValue = cachedData['language'];
-  //     if (languageValue is int) {
-  //       return languageValue;
-  //     }
-  //   }
-  //   return null;
-  // }
 }

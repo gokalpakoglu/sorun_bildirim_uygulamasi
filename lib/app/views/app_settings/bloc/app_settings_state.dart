@@ -4,6 +4,33 @@ enum Languages { turkish, english }
 
 enum AppTheme { lightTheme, darkTheme, systemTheme }
 
+extension LocaleFromLanguageExtension on Languages {
+  Locale get localeFromLanguage {
+    switch (this) {
+      case Languages.english:
+        return const Locale('en', 'US');
+      case Languages.turkish:
+        return const Locale('tr', 'TR');
+
+      default:
+        return const Locale('en', 'US');
+    }
+  }
+}
+
+extension ThemeFromThemeDataExtension on AppTheme {
+  ThemeData? get fromTheme {
+    switch (this) {
+      case AppTheme.lightTheme:
+        return AppThemes.appThemeData[AppTheme.lightTheme];
+      case AppTheme.darkTheme:
+        return AppThemes.appThemeData[AppTheme.darkTheme];
+      default:
+        return AppThemes.appThemeData[AppTheme.darkTheme];
+    }
+  }
+}
+
 class AppSettingsState extends Equatable {
   const AppSettingsState({
     this.theme,

@@ -22,26 +22,9 @@ class _BodyWidgetState extends State<BodyWidget> {
       List<bool> isSelectedTheme =
           themes.map((theme) => state.theme == theme).toList();
 
-      List<Languages> languages = [
-        Languages.english,
-        Languages.turkish,
-      ];
-      Locale getLocaleFromLanguage(Languages language) {
-        switch (language) {
-          case Languages.english:
-            return const Locale('en', 'US');
-          case Languages.turkish:
-            return const Locale('tr', 'TR');
-          // Diğer diller için gerekli durumları ekleyin
-          default:
-            return const Locale(
-                'en', 'US'); // Varsayılan olarak İngilizce döndürülebilir
-        }
-      }
-
-      List<bool> isSelectedLang =
-          // ignore: unrelated_type_equality_checks
-          languages.map((lang) => state.locale == lang).toList();
+      List<bool> isSelectedLang = Languages.values
+          .map((lang) => state.locale == lang.localeFromLanguage)
+          .toList();
 
       return Padding(
         padding: const EdgeInsets.all(16.0),
@@ -78,9 +61,10 @@ class _BodyWidgetState extends State<BodyWidget> {
               isSelected: isSelectedLang,
               onPressed: (int newIndex) {
                 context.read<AppSettingsBloc>().add(LanguageChanged(
-                    locale: getLocaleFromLanguage(languages[newIndex])));
+                    locale: (Languages.values[newIndex].localeFromLanguage),
+                    languages: Languages.values[newIndex]));
               },
-              children: languages.map((lang) {
+              children: Languages.values.map((lang) {
                 String label = lang == Languages.english
                     ? context.loc.english
                     : context.loc.turkish;
