@@ -21,10 +21,13 @@ class _AddProblemLocationViewState extends State<AddProblemLocationView> {
       appBar: AppBar(title: Text(context.loc.getCurrentLocation)),
       body: BlocBuilder<HomeBloc, HomeState>(
         builder: (context, state) {
+          debugPrint("${state.user?.lat},${state.user?.lng}");
+          if (state.user?.lat == null || state.user?.lng == null) {
+            return const Center(child: CircularProgressIndicator());
+          }
           return GoogleMap(
             initialCameraPosition: CameraPosition(
-                target: LatLng(state.user?.lat ?? 0.0, state.user?.lng ?? 0.0),
-                zoom: 14),
+                target: LatLng(state.user!.lat!, state.user!.lng!), zoom: 14),
             markers: state.marker,
             zoomControlsEnabled: false,
             mapType: MapType.normal,

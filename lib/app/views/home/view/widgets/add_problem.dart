@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sorun_bildirim_uygulamasi/app/views/home/bloc/home_bloc.dart';
 import 'package:sorun_bildirim_uygulamasi/core/blocs/bloc_status.dart';
+import 'package:sorun_bildirim_uygulamasi/core/common/custom_elevated_button.dart';
+import 'package:sorun_bildirim_uygulamasi/core/common/custom_text_form_field.dart';
 import 'package:sorun_bildirim_uygulamasi/core/extension/context_extension.dart';
 import 'package:sorun_bildirim_uygulamasi/core/init/navigation/app_router.gr.dart';
 
@@ -42,7 +44,8 @@ class _AddProblemViewState extends State<AddProblemView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    ElevatedButton(
+                    CustomElevatedButton(
+                      text: context.loc.takePhoto,
                       onPressed: () async {
                         final XFile? pickedImage = await _picker.pickImage(
                           source: ImageSource.camera,
@@ -50,68 +53,60 @@ class _AddProblemViewState extends State<AddProblemView> {
                         if (pickedImage != null) {
                           // ignore: use_build_context_synchronously
                           BlocProvider.of<HomeBloc>(context).add(
-                            AddImages([
-                              pickedImage
-                            ]), // Tek bir resim listeye alınıyor.
+                            AddImages([pickedImage]),
                           );
                         }
                       },
-                      child: Text(context.loc.takePhoto),
                     ),
-                    ElevatedButton(
+                    CustomElevatedButton(
+                      text: context.loc.selectPhotos,
                       onPressed: () async {
                         final List<XFile> pickedImages =
                             await _picker.pickMultiImage();
                         if (pickedImages.isNotEmpty) {
                           // ignore: use_build_context_synchronously
                           BlocProvider.of<HomeBloc>(context).add(
-                            AddImages(
-                                pickedImages), // Birden fazla resim listeye alınıyor.
+                            AddImages(pickedImages),
                           );
                         }
                       },
-                      child: Text(context.loc.selectPhotos),
                     ),
                     const SizedBox(height: 16.0),
-                    TextFormField(
-                      decoration: InputDecoration(
-                        hintText: context.loc.title,
-                        errorText: state.titleErrorMsg,
-                        border: const OutlineInputBorder(),
-                      ),
+                    CustomTextFormField(
                       onChanged: (value) {
                         BlocProvider.of<HomeBloc>(context).add(
                           HomeTitleChanged(title: value),
                         );
                       },
+                      hintText: context.loc.title,
+                      obscureText: false,
+                      enabled: true,
                     ),
                     const SizedBox(height: 16.0),
-                    TextFormField(
-                      decoration: InputDecoration(
-                        hintText: context.loc.description,
-                        errorText: state.descriptionErrorMsg,
-                        border: const OutlineInputBorder(),
-                      ),
+                    CustomTextFormField(
                       onChanged: (value) {
                         BlocProvider.of<HomeBloc>(context).add(
                           HomeDescriptionChanged(description: value),
                         );
                       },
+                      obscureText: false,
+                      enabled: true,
+                      hintText: context.loc.description,
                       maxLines: 5,
                     ),
                     const SizedBox(height: 16.0),
-                    ElevatedButton(
+                    CustomElevatedButton(
                       onPressed: () {
                         context.router.push(const AddProblemLocationRoute());
                       },
-                      child: Text(context.loc.selectOnMap),
+                      text: context.loc.selectOnMap,
                     ),
                     const SizedBox(height: 16.0),
-                    ElevatedButton(
+                    CustomElevatedButton(
                       onPressed: (state.isValidTitle &&
                               state.isValidDescription &&
-                              state.lat != 0 &&
-                              state.lng != 0 &&
+                              state.lat != null &&
+                              state.lng != null &&
                               state.images != [])
                           ? () {
                               try {
@@ -120,15 +115,10 @@ class _AddProblemViewState extends State<AddProblemView> {
                               } catch (_) {}
                             }
                           : null,
-                      child: Text(
-                        (state.appStatus is SubmissionLoading)
-                            ? "......"
-                            : context.loc.submit,
-                        style: const TextStyle(
-                          fontSize: 20,
-                        ),
-                      ),
-                    )
+                      text: (state.appStatus is SubmissionLoading)
+                          ? "......"
+                          : context.loc.submit,
+                    ),
                   ],
                 ),
               ),
@@ -152,7 +142,7 @@ void _showErrorDialog(String title, String message, BuildContext context) {
             onPressed: () {
               Navigator.pop(context);
             },
-            child:  Text(context.loc.ok),
+            child: Text(context.loc.ok),
           ),
         ],
       );

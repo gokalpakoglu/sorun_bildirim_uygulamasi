@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sorun_bildirim_uygulamasi/app/views/home/view/widgets/body_widget.dart';
 import 'package:sorun_bildirim_uygulamasi/core/common/app_bar_widget.dart';
+import 'package:sorun_bildirim_uygulamasi/core/common/custom_elevated_button.dart';
 import 'package:sorun_bildirim_uygulamasi/core/extension/context_extension.dart';
 import 'package:sorun_bildirim_uygulamasi/core/init/navigation/app_router.gr.dart';
 
@@ -34,7 +35,8 @@ class _HomeViewState extends State<HomeView> {
                               builder: (_) => AlertDialog(
                                     content: Text(context.loc.logOut),
                                     actions: [
-                                      ElevatedButton(
+                                      CustomElevatedButton(
+                                        text: context.loc.ok,
                                         onPressed: () async {
                                           await FirebaseAuth.instance.signOut();
                                           // ignore: use_build_context_synchronously
@@ -42,7 +44,6 @@ class _HomeViewState extends State<HomeView> {
                                               const MainRoute(),
                                               predicate: (_) => false);
                                         },
-                                        child: Text(context.loc.ok),
                                       ),
                                       TextButton(
                                           onPressed: () =>

@@ -78,7 +78,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           lng: userData?["lng"] ?? 0.0,
         );
 
-        emit(state.copyWith(user: user, problems: problems));
+        emit(state.copyWith(
+            appStatus: const SubmissionSuccess(),
+            user: user,
+            problems: problems));
       }
     });
     on<AddImages>((event, emit) {
@@ -87,7 +90,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       emit(state.copyWith(images: updatedImages));
     });
     on<AddReportSubmitted>((event, emit) async {
-      emit(state.copyWith(appStatus: FormSubmitting()));
+      emit(state.copyWith(appStatus: const InitialStatus()));
       try {
         List<String> imageUrls = [];
 
@@ -104,8 +107,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           imageUrls: imageUrls,
         );
         await databaseService.addProblem(model);
-        emit(state.copyWith(images: []));
-        emit(state.copyWith(appStatus: const SubmissionSuccess()));
+
+        state.problems.add(model.toJson());
+
+        emit(state.copyWith(
+            appStatus: const SubmissionSuccess(),
+            images: [],
+            problems: state.problems));
       } catch (e) {
         emit(state.copyWith(appStatus: SubmissionFailed(e)));
       }

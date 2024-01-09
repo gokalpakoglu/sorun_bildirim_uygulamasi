@@ -72,6 +72,10 @@ class _BodyWidgetState extends State<BodyWidget> {
       return Marker(
         markerId: MarkerId("${problem['lat']}${problem['lng']}"),
         position: latLng,
+        infoWindow: InfoWindow(
+          title: problem['title'],
+          snippet: problem['description'],
+        ),
         onTap: () {
           if (groupProblemsByLocation(problemsData)[latLng]!.length > 1) {
             showModalBottomSheet<void>(
