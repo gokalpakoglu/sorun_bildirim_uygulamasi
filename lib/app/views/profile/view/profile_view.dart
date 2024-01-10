@@ -14,35 +14,34 @@ class ProfileView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
+      appBar: AppBarWidget(
+        title: context.loc.profile,
+      ),
       body: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasData && snapshot.data != null) {
-            return Scaffold(
-              appBar: AppBarWidget(title: context.loc.profile),
-              body: const BodyWidget(),
-            );
+            return const BodyWidget();
           } else {
-            return Scaffold(
-              body: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      context.loc.firstLogin,
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 20),
-                    CustomElevatedButton(
-                      text: context.loc.login,
-                      onPressed: () => context.router.pushAndPopUntil(
-                          const LoginRoute(),
-                          predicate: (_) => false),
-                    ),
-                  ],
-                ),
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    context.loc.firstLogin,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 20),
+                  CustomElevatedButton(
+                    text: context.loc.login,
+                    onPressed: () => context.router.pushAndPopUntil(
+                        const LoginRoute(),
+                        predicate: (_) => false),
+                  ),
+                ],
               ),
             );
           }
